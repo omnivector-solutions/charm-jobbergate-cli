@@ -9,6 +9,7 @@ from ops.model import ActiveStatus
 
 class CharmJobbergate(CharmBase):
     """Jobbergate."""
+
     def __init__(self, *args):
         """Initialize charm and configure states and events to observe."""
         super().__init__(*args)
@@ -25,10 +26,13 @@ class CharmJobbergate(CharmBase):
             self.framework.observe(event, handler)
 
     def _on_install(self, event):
-        subprocess.run(["snap", "install", "aws-cli", "--classic"])]
-        self.unit.status = ActiveStatus("Charm Installed")
+        # place holder until snap available
+        subprocess.run(["snap", "install", "aws-cli", "--classic"])
+        self.unit.status = ActiveStatus("Jobbergate Installed")
 
     def _on_config_changed(self, event):
+        """Set snap mode."""
+        '''
         subprocess.run(
             [
                 "snap",
@@ -37,6 +41,9 @@ class CharmJobbergate(CharmBase):
                 "snap.mode=" + self.model.config["snap-mode"]
             ]
         )
+        '''
+        self.unit.status = ActiveStatus("snap mode set")
+
 
 if __name__ == "__main__":
     main(CharmJobbergate)
