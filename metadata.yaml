@@ -1,0 +1,19 @@
+name: jobbergate
+summary: jobbergate command line interface for hpc cluster
+maintainers:
+    - OmniVector Solutions
+description: |
+        Installs the jobbergate cli snap
+tags:
+    - test
+
+series:
+    - focal
+    - centos7
+    - bionic
+subordinate: true
+
+requires:
+  juju-info:
+    interface: juju-info
+    scope: container

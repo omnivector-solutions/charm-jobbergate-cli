@@ -1,0 +1,6 @@
+options:
+  snap-mode:
+    default: "juju"
+    type: string
+    description: |
+      Snap mode for jobbergate cli snap
