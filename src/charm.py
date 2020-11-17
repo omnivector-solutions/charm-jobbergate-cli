@@ -27,7 +27,12 @@ class CharmJobbergate(CharmBase):
 
     def _on_install(self, event):
         # place holder until snap available
-        subprocess.run(["snap", "install", "aws-cli", "--classic"])
+        subprocess.run([
+            "snap",
+            "install",
+           self.model.resources.fetch('jobbergate-snap'),
+           "--dangerous"
+        ])
         self.unit.status = ActiveStatus("Jobbergate Installed")
 
     def _on_config_changed(self, event):
