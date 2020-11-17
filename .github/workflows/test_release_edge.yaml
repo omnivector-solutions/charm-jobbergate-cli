@@ -137,4 +137,4 @@ jobs:
       - name: "Destroy the model"
         if: ${{ always() }}
         run: |
-          juju destroy-model -y ${{ steps.vars.outputs.sha_short }}-focal
+          juju destroy-model -y ${{ steps.vars.outputs.sha_short }}-focal --force
