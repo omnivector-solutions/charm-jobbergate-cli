@@ -1,0 +1,65 @@
+name: TestBuildDeployEdge
+  
+on: pull_request
+jobs:
+  lint-charms:
+    name: "Lint the charms"
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+          architecture: 'x64'
+      - name: "Install tox, run 'make lint'"
+        run: | 
+          pip install tox
+          make lint
+  build-charms:
+    name: "Build the charms"
+    needs: lint-charms
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+          architecture: 'x64'
+      - name: "Install charmcraft and build charms"
+        run: |
+          pip install charmcraft
+          charmcraft build
+      - name: Cache built charms
+        if: ${{ success() }}
+        id: jobbergate-charm
+        uses: actions/cache@v2
+        with:
+          path: |
+            jobbergate.charm
+          key: jobbergate-charm
+  
+  cache-juju-tar:
+    name: "Cache juju tar for future jobs"
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: "Configure AWS Credentials"
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-2
+
+      - name: "Pull juju creds from s3"
+        if: steps.juju-tar.outputs.cache-hit != 'true'
+        run: |
+          aws s3 cp s3://omnivector-cicd/juju-local/juju-local.tar.gz .
+          tar -xzvf juju-local.tar.gz
+      - name: "Cache juju tar"
+        if: ${{ success() }}
+        id: juju-tar
+        uses: actions/cache@v2
+        with:
+          path: |
+            .local/share/juju
+          key: juju-tar
+
