@@ -31,7 +31,7 @@ class CharmJobbergate(CharmBase):
             "snap",
             "install",
             self.model.resources.fetch('jobbergate-snap'),
-            "--dangerous"
+            "--dangerous",
             "--classic"
         ])
         self.unit.status = ActiveStatus("Jobbergate Installed")
