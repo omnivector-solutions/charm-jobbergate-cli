@@ -111,7 +111,7 @@ jobs:
         run: |
           juju deploy ubuntu --series focal --bind nat
           juju deploy ./jobbergate.charm --series focal --bind nat
-          juju deploy relate ubuntu jobbergate
+          juju relate ubuntu jobbergate
       - name: "Wait for deployment to settle"
         if: ${{ success() }}
         run: |
