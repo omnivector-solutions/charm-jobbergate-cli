@@ -38,15 +38,16 @@ class CharmJobbergate(CharmBase):
 
     def _on_config_changed(self, event):
         """Set snap mode."""
-        
+        '''
         subprocess.run(
             [
                 "snap",
                 "set",
-                "jobbergate",
+                "jobbergate-cli",
                 "snap.mode=" + self.model.config["snap-mode"]
             ]
         )
+        '''
         self.unit.status = ActiveStatus("snap mode set")
 
 
