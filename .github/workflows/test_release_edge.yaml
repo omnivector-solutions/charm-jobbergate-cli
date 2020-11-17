@@ -90,12 +90,14 @@ jobs:
 
       - name: "Set JUJU_DATA to GITHUB_ENV"
         run: |
-          echo "JUJU_DATA=/home/runner/work/slurm-charms/slurm-charms/.local/share/juju" >> $GITHUB_ENV
+          echo "JUJU_DATA=/home/runner/work/charm-jobbergate-cli/charm-jobbergate-cli/.local/share/juju" >> $GITHUB_ENV
       - name: "Install juju"
         run: | 
           sudo snap install juju --classic
       - name: "Login to juju controller as cicd user"
         run: |
+          ls -la
+          pwd
           echo ${{secrets.JUJU_CIRCLECI_USER_PASSWORD}} | juju login --user circleci
       - name: "Add model to house charms for testing"
         if: ${{ success() }}
