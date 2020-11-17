@@ -19,7 +19,7 @@ requires:
     scope: container
 resources:
   jobbergate-snap:
-  type: file
+    type: file
     filename: jobbergate.snap
     description: slurm tarbal
 

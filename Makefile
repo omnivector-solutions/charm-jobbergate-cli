@@ -14,6 +14,9 @@ push-charm-to-edge: ## Remove .tox and build dirs
 pull-charm-from-edge: ## Remove .tox and build dirs
 	wget https://omnivector-public-assets.s3-us-west-2.amazonaws.com/charms/charm-jobbergate/edge/jobbergate.charm
 
+pull-snap-from-edge: ## Remove .tox and build dirs
+	aws s3 cp s3://omnivector-private-assets/snaps/jobbergate-cli/edge/jobbergate-cli_0.0.1_amd64.snap ./jobbergate-cli.snap
+
 # SETTINGS
 # Use one shell for all commands in a target recipe
 .ONESHELL:
