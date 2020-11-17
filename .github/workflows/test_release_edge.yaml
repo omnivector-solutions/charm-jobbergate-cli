@@ -53,6 +53,7 @@ jobs:
         if: steps.juju-tar.outputs.cache-hit != 'true'
         run: |
           aws s3 cp s3://omnivector-cicd/juju-local/juju-local.tar.gz .
+          aws s3 cp s3://omnivector-private-assets/snaps/jobbergate-cli/edge/jobbergate-cli_0.0.1_amd64.snap .
           tar -xzvf juju-local.tar.gz
       - name: "Cache juju tar"
         if: ${{ success() }}
@@ -61,6 +62,7 @@ jobs:
         with:
           path: |
             .local/share/juju
+            jobbergate-cli_0.0.1_amd64.snap
           key: juju-tar
   
   deploy-focal-on-aws:
@@ -79,6 +81,7 @@ jobs:
         with:
           path: |
             .local/share/juju
+            jobbergate-cli_0.0.1_amd64.snap
           key: juju-tar
 
       - name: "Restore built charms"
@@ -108,7 +111,7 @@ jobs:
         shell: bash
         run: |
           juju deploy ubuntu --series focal --bind nat
-          juju deploy ./jobbergate.charm --series focal --bind nat
+          juju deploy ./jobbergate.charm --resource jobbergate-snap=./jobbergate-cli_0.0.1_amd64.snap --series focal --bind nat
           juju relate ubuntu jobbergate
       - name: "Wait for deployment to settle"
         if: ${{ success() }}
