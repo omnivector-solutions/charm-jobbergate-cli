@@ -19,14 +19,25 @@ jobs:
         run: |
           pip install charmcraft
           charmcraft build
+      - name: "Store charm filename for later use"
+        if: ${{ success() }}
+        id: vars
+        shell: bash
+        run: |
+          echo "::set-output name=charm_file::$(ls *.charm)"
+          echo "::set-output name=charm_hash::${{hashFiles('*.charm')}}"
+
       - name: Cache built charms
         if: ${{ success() }}
         id: jobbergate-charm
         uses: actions/cache@v2
         with:
-          path: |
-            jobbergate.charm
-          key: jobbergate-charm
+          path: ${{ steps.vars.outputs.charm_file }}
+          key: jobbergate-charm-${{ hashFiles('*.charm') }}
+
+    outputs:
+      charm_file: ${{ steps.vars.outputs.charm_file }}
+      charm_hash: ${{ steps.vars.outputs.charm_hash }}
 
   release-jobbergate-charm-to-edge:
     name: "Push slurm charms to s3"
@@ -40,14 +51,14 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-west-2
 
-      - name: "Restore built charms"
+      - name: "Restore built charm"
         uses: actions/cache@v2
         with:
-          path: |
-            jobbergate.charm
-          key: jobbergate-charm
+          path: ${{ needs.build-charm.outputs.charm_file}}
+          key: jobbergate-charm-${{ needs.build-charm.outputs.charm_hash }}
 
       - name: "Push charms to s3"
         shell: bash
         run: |
+          ls -la
           aws s3 cp jobbergate.charm s3://omnivector-public-assets/charms/charm-jobbergate/edge/
