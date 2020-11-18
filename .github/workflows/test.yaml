@@ -16,7 +16,7 @@ jobs:
         run: | 
           pip install tox
           make lint
-  build-charms:
+  build-charm:
     name: "Build the charms"
     needs: lint-charms
     runs-on: "ubuntu-latest"
@@ -35,9 +35,13 @@ jobs:
         id: jobbergate-charm
         uses: actions/cache@v2
         with:
-          path: |
-                  #jobbergate.charm
-          key: jobbergate-charm
+          path: ${{ steps.vars.outputs.charm_file }}
+          key: jobbergate-charm-${{ hashFiles('*.charm') }}
+
+    outputs:
+      charm_file: ${{ steps.vars.outputs.charm_file }}
+      charm_hash: ${{ steps.vars.outputs.charm_hash }}
+
   
   cache-juju-tar:
     name: "Cache juju tar for future jobs"
@@ -69,7 +73,7 @@ jobs:
   deploy-focal-on-aws:
     name: "Deploy focal on aws"
     runs-on: "ubuntu-latest"
-    needs: [cache-juju-tar, build-charms]
+    needs: [cache-juju-tar, build-charm]
     steps:
       - uses: actions/checkout@v2
       - name: "Store commit sha for later use"
@@ -88,9 +92,8 @@ jobs:
       - name: "Restore built charms"
         uses: actions/cache@v2
         with:
-          path: |
-            jobbergate.charm
-          key: jobbergate-charm
+          path: ${{ needs.build-charm.outputs.charm_file}}
+          key: jobbergate-charm-${{ needs.build-charm.outputs.charm_hash }}
 
       - name: "Set JUJU_DATA to GITHUB_ENV"
         run: |
