@@ -29,7 +29,7 @@ jobs:
       - name: "Install charmcraft and build charms"
         run: |
           pip install charmcraft
-          #charmcraft build
+          charmcraft build
       - name: Cache built charms
         if: ${{ success() }}
         id: jobbergate-charm
@@ -92,7 +92,7 @@ jobs:
       - name: "Restore built charms"
         uses: actions/cache@v2
         with:
-          path: ${{ needs.build-charm.outputs.charm_file}}
+          path: ${{ needs.build-charm.outputs.charm_file }}
           key: jobbergate-charm-${{ needs.build-charm.outputs.charm_hash }}
 
       - name: "Set JUJU_DATA to GITHUB_ENV"
