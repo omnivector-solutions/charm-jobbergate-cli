@@ -39,7 +39,6 @@ class CharmJobbergate(CharmBase):
 
     def _on_upgrade_charm(self, event):
         """Upgrade the charm."""
-
         # place holder until snap available
         subprocess.run([
             "snap",
