@@ -30,6 +30,15 @@ jobs:
         run: |
           pip install charmcraft
           charmcraft build
+
+      - name: "Store charm filename for later use"
+        if: ${{ success() }}
+        id: vars
+        shell: bash
+        run: |
+          echo "::set-output name=charm_file::$(ls *.charm)"
+          echo "::set-output name=charm_hash::${{hashFiles('*.charm')}}"
+
       - name: Cache built charms
         if: ${{ success() }}
         id: jobbergate-charm
