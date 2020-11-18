@@ -29,14 +29,14 @@ jobs:
       - name: "Install charmcraft and build charms"
         run: |
           pip install charmcraft
-          charmcraft build
+          #charmcraft build
       - name: Cache built charms
         if: ${{ success() }}
         id: jobbergate-charm
         uses: actions/cache@v2
         with:
           path: |
-            jobbergate.charm
+                  #jobbergate.charm
           key: jobbergate-charm
   
   cache-juju-tar:
