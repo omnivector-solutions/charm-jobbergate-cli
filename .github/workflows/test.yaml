@@ -83,6 +83,9 @@ jobs:
     name: "Deploy focal on aws"
     runs-on: "ubuntu-latest"
     needs: [cache-juju-tar, build-charm]
+    strategy:
+      matrix:
+        os: ["centos7", "bionic", "focal"]
     steps:
       - uses: actions/checkout@v2
       - name: "Store commit sha for later use"
@@ -116,15 +119,15 @@ jobs:
       - name: "Add model to house charms for testing"
         if: ${{ success() }}
         run: |
-          juju add-model ${{ steps.vars.outputs.sha_short }}-focal
-          juju add-space -m ${{ steps.vars.outputs.sha_short }}-focal nat 172.31.90.0/24 172.31.91.0/24 172.31.92.0/24 172.31.93.0/24
+          juju add-model ${{ steps.vars.outputs.sha_short }}-${{ matrix.os }}
+          juju add-space -m ${{ steps.vars.outputs.sha_short }}-${{ matrix.os }} nat 172.31.90.0/24 172.31.91.0/24 172.31.92.0/24 172.31.93.0/24
           juju model-config logging-config="<root>=DEBUG;<unit>=DEBUG"
       - name: "Deploy jobbergate and ubuntu"
         if: ${{ success() }}
         shell: bash
         run: |
           juju deploy ubuntu --series focal --bind nat
-          juju deploy ./jobbergate.charm --resource jobbergate-snap=./jobbergate-cli_0.0.1_amd64.snap --series focal --bind nat
+          juju deploy ./jobbergate.charm --resource jobbergate-snap=./jobbergate-cli_0.0.1_amd64.snap --series ${{ matrix.os }}  --bind nat
           juju relate ubuntu jobbergate
       - name: "Wait for deployment to settle"
         if: ${{ success() }}
@@ -139,15 +142,15 @@ jobs:
       - name: "Grab the slurm logs"
         if: ${{ always() }}
         run: |
-          juju debug-log --replay --include jobbergate > jobbergate-focal.txt
+          juju debug-log --replay --include jobbergate > jobbergate-${{ matrix.os }}.txt
       - name: "Upload slurm charm logs"
         if: ${{ always() }}
         uses: actions/upload-artifact@v2
         with:
           name: jobbergate-logs
           path: |
-            jobbergate-focal.txt
+            jobbergate-${{ matrix.os }}.txt
       - name: "Destroy the model"
         if: ${{ always() }}
         run: |
-          juju destroy-model -y ${{ steps.vars.outputs.sha_short }}-focal --force
+          juju destroy-model -y ${{ steps.vars.outputs.sha_short }}-${{ matrix.os }} --force
