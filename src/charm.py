@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 """Jobbergate-cli charm."""
+import logging
+import re
 import shlex
 import subprocess
 
@@ -8,16 +10,34 @@ from ops.main import main
 from ops.model import ActiveStatus
 
 
-SNAP_REFRESH = "snap refresh {snap_res} --dangerous --classic"
-JOBBERGATE_VERSION = "jobbergate --version"
+log = logging.getLogger()
 
 
-def _run_quoted_command(template, capture_output=False, check=True, **kwargs):
+ENCODING = "utf-8"
+SNAP_INSTALL = "snap install --classic --dangerous {snap_res}"
+JOBBERGATE_VERSION = "jobbergate-cli.jobbergate --version"
+VERSION_RX = re.compile(r'version (\S+)\b')
+
+
+def _run(template, **kwargs):
     """
-    Run the command with kwargs formatted into the template; while safely quoting for the shell
+    Run the command with kwargs formatted into the template
     """
-    cmd = shlex.quote(template.format(**kwargs))
-    return subprocess.run(cmd, shell=True, check=check, capture_output=capture_output)
+    format_args = {k: shlex.quote(str(v)) for (k, v) in kwargs.items()}
+    cmd = template.format(**format_args)
+    ret = subprocess.run(
+        shlex.split(cmd),
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        check=False,
+        encoding=ENCODING,
+    )
+    try:
+        ret.check_returncode()
+        return ret
+    except subprocess.CalledProcessError:
+        log.error("\n".join([f"** failed {cmd!r}:", f"{ret.stdout}"]))
+        raise
 
 
 class CharmJobbergate(CharmBase):
@@ -34,24 +54,26 @@ class CharmJobbergate(CharmBase):
         for event, handler in event_handler_bindings.items():
             self.framework.observe(event, handler)
 
-    def install_snap_resource(self, res):
+    def install_snap_resource(self, cmd, res):
         """
         Use snap to install the resource we just fetched and set properties about it
         """
-        _run_quoted_command(SNAP_REFRESH, snap_res=res)
-        ver = _run_quoted_command(JOBBERGATE_VERSION, capture_output=True)
-        self.model.unit.set_workload_version(ver.strip())
+        _run(cmd, snap_res=res)
+        ver = _run(JOBBERGATE_VERSION).stdout
+        ver = VERSION_RX.search(ver).group(1)
+        self.framework.breakpoint()
+        self.model.unit.set_workload_version(ver)
 
     def _on_install(self, event):
         """Install the jobbergate-cli snap."""
         snap_res = self.model.resources.fetch("jobbergate-snap")
-        self.install_snap_resource(snap_res)
+        self.install_snap_resource(cmd=SNAP_INSTALL, res=snap_res)
         self.unit.status = ActiveStatus("Jobbergate Installed")
 
     def _on_upgrade_charm(self, event):
         """Upgrade the charm."""
         snap_res = self.model.resources.fetch("jobbergate-snap")
-        self.install_snap_resource(snap_res)
+        self.install_snap_resource(cmd=SNAP_INSTALL, res=snap_res)
         self.unit.status = ActiveStatus("Jobbergate upgraded")
 
 
