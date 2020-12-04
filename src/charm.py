@@ -102,7 +102,7 @@ class CharmJobbergate(CharmBase):
         digest = digest_file(snap_res)
         # only process this as an upgrade if the snap has actually changed
         if digest != self._stored.last_snap_digest:
-            self.install_snap_resource(cmd=SNAP_INSTALL, res=snap_res)
+            self.install_snap_resource(res=snap_res)
             self._stored.last_snap_digest = digest
             self.unit.status = ActiveStatus("Jobbergate upgraded")
         else:
