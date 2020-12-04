@@ -24,7 +24,7 @@ def snapfile(tmpdir):
     A temporary file with known contents
     """
     pth = tmpdir / "my.snap"
-    pth.write_binary(b'oh no')
+    pth.write_binary(b"oh no")
     yield pth
     pth.remove()
 
@@ -44,7 +44,7 @@ def patched_log():
     """
     Stub out the log system for mocks
     """
-    with patch.object(charm, 'log', autospec=True) as m:
+    with patch.object(charm, "log", autospec=True) as m:
         yield m
 
 
@@ -52,20 +52,23 @@ def test_run(snapfile, patched_log):
     """
     Do I run programs, and do I catch errors from running programs?
     """
-    assert charm.run(f'ls {snapfile!s}').stdout == str(snapfile) + '\n'
+    assert charm.run(f"ls {snapfile!s}").stdout == str(snapfile) + "\n"
 
-    bad_ls = 'ls /0ewr89gyhwaesr0g8h'
+    bad_ls = "ls /0ewr89gyhwaesr0g8h"
     with raises(subprocess.CalledProcessError):
         charm.run(bad_ls)
     arg = patched_log.error.call_args[0][0]
-    assert arg.startswith(f'** failed {bad_ls!r}:')
+    assert arg.startswith(f"** failed {bad_ls!r}:")
 
 
 def test_digest_file(snapfile):
     """
     Do I digest the file contents reliably?
     """
-    assert charm.digest_file(snapfile) == '0efea166568eee1c3747bdbfb5b18df82e8873e385e10f5f65bc7f4f0de69b10'
+    assert (
+        charm.digest_file(snapfile)
+        == "0efea166568eee1c3747bdbfb5b18df82e8873e385e10f5f65bc7f4f0de69b10"
+    )
 
 
 @fixture
@@ -108,6 +111,7 @@ def test_install(harness, patched_run, install_subprocesses):
             encoding=ANY,
         ),
     ]
+    assert harness.get_workload_version() == "19"
 
 
 def test_upgrade_unchanged(harness, patched_run, install_subprocesses):
