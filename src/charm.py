@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 """Jobbergate-cli charm."""
+from hashlib import sha256
 import logging
 import re
 import shlex
 import subprocess
 
 from ops.charm import CharmBase
+from ops.framework import StoredState
 from ops.main import main
 from ops.model import ActiveStatus
 
@@ -17,6 +19,7 @@ ENCODING = "utf-8"
 SNAP_INSTALL = "snap install --classic --dangerous {snap_res}"
 JOBBERGATE_VERSION = "jobbergate-cli.jobbergate --version"
 VERSION_RX = re.compile(r'version (\S+)\b')
+READ_CHUNK = 65536
 
 
 def _run(template, **kwargs):
@@ -40,12 +43,33 @@ def _run(template, **kwargs):
         raise
 
 
+def digest_file(filename):
+    """
+    Digest the contents of ``filename'' with sha256 -> hexdigest
+    """
+    hash_ = sha256()
+
+    with open(filename, 'rb') as opened:
+        buf = opened.read(READ_CHUNK)
+        while len(buf) > 0:
+            hash_.update(buf)
+            buf = opened.read(READ_CHUNK)
+
+    return hash_.hexdigest()
+
+
 class CharmJobbergate(CharmBase):
     """Jobbergate."""
+
+    _stored = StoredState()
 
     def __init__(self, *args):
         """Initialize charm and configure states and events to observe."""
         super().__init__(*args)
+
+        self._stored.set_default(
+            last_snap_digest='',
+        )
 
         event_handler_bindings = {
             self.on.install: self._on_install,
@@ -61,20 +85,32 @@ class CharmJobbergate(CharmBase):
         _run(cmd, snap_res=res)
         ver = _run(JOBBERGATE_VERSION).stdout
         ver = VERSION_RX.search(ver).group(1)
-        self.framework.breakpoint()
         self.model.unit.set_workload_version(ver)
+        log.info(f"Installed version {ver}")
 
     def _on_install(self, event):
         """Install the jobbergate-cli snap."""
         snap_res = self.model.resources.fetch("jobbergate-snap")
+        digest = digest_file(snap_res)
         self.install_snap_resource(cmd=SNAP_INSTALL, res=snap_res)
+        self._stored.last_snap_digest = digest
         self.unit.status = ActiveStatus("Jobbergate Installed")
 
     def _on_upgrade_charm(self, event):
         """Upgrade the charm."""
         snap_res = self.model.resources.fetch("jobbergate-snap")
-        self.install_snap_resource(cmd=SNAP_INSTALL, res=snap_res)
-        self.unit.status = ActiveStatus("Jobbergate upgraded")
+        digest = digest_file(snap_res)
+        # only process this as an upgrade if the snap has actually changed
+        if digest != self._stored.last_snap_digest:
+            self.install_snap_resource(cmd=SNAP_INSTALL, res=snap_res)
+            self._stored.last_snap_digest = digest
+            self.unit.status = ActiveStatus("Jobbergate upgraded")
+        else:
+            # status is unchanged but replace the message
+            _was = self.unit.status.name
+            _new = self.unit.status.from_name(_was, "skipping upgrade, snap unchanged")
+            self.unit.status = _new
+
 
 
 if __name__ == "__main__":
