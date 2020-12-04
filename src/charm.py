@@ -18,11 +18,11 @@ log = logging.getLogger()
 ENCODING = "utf-8"
 SNAP_INSTALL = "snap install --classic --dangerous {snap_res}"
 JOBBERGATE_VERSION = "jobbergate-cli.jobbergate --version"
-VERSION_RX = re.compile(r'version (\S+)\b')
+VERSION_RX = re.compile(r"version (\S+)\b")
 READ_CHUNK = 65536
 
 
-def _run(template, **kwargs):
+def run(template, **kwargs):
     """
     Run the command with kwargs formatted into the template
     """
@@ -49,7 +49,7 @@ def digest_file(filename):
     """
     hash_ = sha256()
 
-    with open(filename, 'rb') as opened:
+    with open(filename, "rb") as opened:
         buf = opened.read(READ_CHUNK)
         while len(buf) > 0:
             hash_.update(buf)
@@ -68,7 +68,7 @@ class CharmJobbergate(CharmBase):
         super().__init__(*args)
 
         self._stored.set_default(
-            last_snap_digest='',
+            last_snap_digest="",
         )
 
         event_handler_bindings = {
@@ -78,12 +78,12 @@ class CharmJobbergate(CharmBase):
         for event, handler in event_handler_bindings.items():
             self.framework.observe(event, handler)
 
-    def install_snap_resource(self, cmd, res):
+    def install_snap_resource(self, res):
         """
         Use snap to install the resource we just fetched and set properties about it
         """
-        _run(cmd, snap_res=res)
-        ver = _run(JOBBERGATE_VERSION).stdout
+        run(SNAP_INSTALL, snap_res=res)
+        ver = run(JOBBERGATE_VERSION).stdout
         ver = VERSION_RX.search(ver).group(1)
         self.model.unit.set_workload_version(ver)
         log.info(f"Installed version {ver}")
@@ -92,7 +92,7 @@ class CharmJobbergate(CharmBase):
         """Install the jobbergate-cli snap."""
         snap_res = self.model.resources.fetch("jobbergate-snap")
         digest = digest_file(snap_res)
-        self.install_snap_resource(cmd=SNAP_INSTALL, res=snap_res)
+        self.install_snap_resource(res=snap_res)
         self._stored.last_snap_digest = digest
         self.unit.status = ActiveStatus("Jobbergate Installed")
 
@@ -112,6 +112,5 @@ class CharmJobbergate(CharmBase):
             self.unit.status = _new
 
 
-
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: nocoverage
     main(CharmJobbergate)
