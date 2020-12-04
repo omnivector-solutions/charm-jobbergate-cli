@@ -1,5 +1,5 @@
 name: jobbergate
-summary: jobbergate command line interface for hpc cluster
+summary: jobbergate command line interface for HPC cluster
 maintainers:
     - OmniVector Solutions
 description: |
@@ -11,15 +11,19 @@ series:
     - focal
     - centos7
     - bionic
+
 subordinate: true
 
 requires:
+
   juju-info:
     interface: juju-info
     scope: container
+
 resources:
+
   jobbergate-snap:
     type: file
     filename: jobbergate.snap
-    description: slurm tarbal
+    description: jobbergate-cli snapfile
 

@@ -1,5 +1,5 @@
 name: TestBuildDeployEdge
-  
+
 on: pull_request
 
 jobs:
@@ -8,24 +8,31 @@ jobs:
     runs-on: "ubuntu-latest"
     steps:
       - uses: actions/checkout@v2
+
       - uses: actions/setup-python@v2
         with:
           python-version: '3.x'
           architecture: 'x64'
+
       - name: "Install tox, run 'make lint'"
-        run: | 
+        run: |
           pip install tox
           make lint
+
+
   build-charm:
     name: "Build the charms"
     needs: lint-charms
     runs-on: "ubuntu-latest"
     steps:
+
       - uses: actions/checkout@v2
+
       - uses: actions/setup-python@v2
         with:
           python-version: '3.x'
           architecture: 'x64'
+
       - name: "Install charmcraft and build charms"
         run: |
           pip install charmcraft
@@ -51,7 +58,7 @@ jobs:
       charm_file: ${{ steps.vars.outputs.charm_file }}
       charm_hash: ${{ steps.vars.outputs.charm_hash }}
 
-  
+
   cache-juju-tar:
     name: "Cache juju tar for future jobs"
     runs-on: "ubuntu-latest"
@@ -63,6 +70,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-west-2
 
+      # FIXME: oh dear, please use AWS Secrets Manager not s3 for this
       - name: "Pull juju creds from s3"
         if: steps.juju-tar.outputs.cache-hit != 'true'
         run: |
@@ -78,7 +86,8 @@ jobs:
             .local/share/juju
             jobbergate-cli_0.0.1_amd64.snap
           key: juju-tar
-  
+
+
   deploy-focal-on-aws:
     name: "Deploy focal on aws"
     runs-on: "ubuntu-latest"
@@ -86,13 +95,16 @@ jobs:
     strategy:
       matrix:
         os: ["centos7", "bionic", "focal"]
+
     steps:
       - uses: actions/checkout@v2
+
       - name: "Store commit sha for later use"
         id: vars
         shell: bash
         run: |
           echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+
       - name: "Restore cached juju tar"
         uses: actions/cache@v2
         with:
@@ -110,18 +122,22 @@ jobs:
       - name: "Set JUJU_DATA to GITHUB_ENV"
         run: |
           echo "JUJU_DATA=/home/runner/work/charm-jobbergate-cli/charm-jobbergate-cli/.local/share/juju" >> $GITHUB_ENV
+
       - name: "Install juju"
-        run: | 
+        run: |
           sudo snap install juju --classic
+
       - name: "Login to juju controller as cicd user"
         run: |
           echo ${{secrets.JUJU_CIRCLECI_USER_PASSWORD}} | juju login --user circleci
+
       - name: "Add model to house charms for testing"
         if: ${{ success() }}
         run: |
           juju add-model ${{ steps.vars.outputs.sha_short }}-${{ matrix.os }}
           juju add-space -m ${{ steps.vars.outputs.sha_short }}-${{ matrix.os }} nat 172.31.90.0/24 172.31.91.0/24 172.31.92.0/24 172.31.93.0/24
           juju model-config logging-config="<root>=DEBUG;<unit>=DEBUG"
+
       - name: "Deploy jobbergate and ubuntu"
         if: ${{ success() }}
         shell: bash
@@ -129,20 +145,24 @@ jobs:
           juju deploy ubuntu --series focal --bind nat
           juju deploy ./jobbergate.charm --resource jobbergate-snap=./jobbergate-cli_0.0.1_amd64.snap --series ${{ matrix.os }}  --bind nat
           juju relate ubuntu jobbergate
+
       - name: "Wait for deployment to settle"
         if: ${{ success() }}
         run: |
           sudo snap install juju-wait --classic
           juju-wait
+
       - name: "Remove applications from juju model"
         if: ${{ always() }}
         run: |
           juju remove-application ubuntu
           juju remove-application jobbergate
+
       - name: "Grab the slurm logs"
         if: ${{ always() }}
         run: |
           juju debug-log --replay --include jobbergate > jobbergate-${{ matrix.os }}.txt
+
       - name: "Upload slurm charm logs"
         if: ${{ always() }}
         uses: actions/upload-artifact@v2
@@ -150,6 +170,7 @@ jobs:
           name: jobbergate-logs
           path: |
             jobbergate-${{ matrix.os }}.txt
+
       - name: "Destroy the model"
         if: ${{ always() }}
         run: |
