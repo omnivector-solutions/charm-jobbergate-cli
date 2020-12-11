@@ -61,6 +61,20 @@ def test_run(snapfile, patched_log):
     assert arg.startswith(f"** failed {bad_ls!r}:")
 
 
+def test_run_unicode_error(patched_run, patched_log):
+    """
+    If an error message contains non-ascii, do I downgrade it to ascii before logging it?
+    """
+    bad_ret = Mock()
+    bad_ret.stdout = '‘hello’'  # smart quotes
+    bad_ret.check_returncode.side_effect = subprocess.CalledProcessError(1, 'oh no')
+    patched_run.return_value = bad_ret
+    with raises(subprocess.CalledProcessError):
+        charm.run("say hello")
+
+    assert patched_log.error.call_args[0][0].endswith("\n'\\u2018hello\\u2019'")
+
+
 def test_digest_file(snapfile):
     """
     Do I digest the file contents reliably?

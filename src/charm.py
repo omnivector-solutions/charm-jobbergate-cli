@@ -39,7 +39,8 @@ def run(template, **kwargs):
         ret.check_returncode()
         return ret
     except subprocess.CalledProcessError:
-        log.error("\n".join([f"** failed {cmd!r}:", f"{ret.stdout}"]))
+        # downgrade non-ascii text to ascii for unpredictable log contexts
+        log.error("\n".join([f"** failed {cmd!r}:", f"{ascii(ret.stdout)}"]))
         raise
 
 
