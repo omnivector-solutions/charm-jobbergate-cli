@@ -118,7 +118,7 @@ def test_install(harness, patched_run, install_subprocesses):
             encoding=ANY,
         ),
         call(
-            ["jobbergate-cli.jobbergate", "--version"],
+            ["/snap/bin/jobbergate-cli.jobbergate", "--version"],
             stdout=ANY,
             stderr=ANY,
             check=False,

@@ -17,7 +17,7 @@ log = logging.getLogger()
 
 ENCODING = "utf-8"
 SNAP_INSTALL = "snap install --classic --dangerous {snap_res}"
-JOBBERGATE_VERSION = "jobbergate-cli.jobbergate --version"
+JOBBERGATE_VERSION = "/snap/bin/jobbergate-cli.jobbergate --version"
 VERSION_RX = re.compile(r"version (\S+)\b")
 READ_CHUNK = 65536
 
