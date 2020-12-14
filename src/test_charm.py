@@ -91,8 +91,9 @@ def install_subprocesses():
     Just some simple mocks to represent the expected subprocess.run() calls
     """
     return [
-        Mock(stdout="woo snap installed"),
-        Mock(stdout="release version 19"),
+        Mock(stdout="woo snap installed"),  # snap install
+        Mock(stdout=""),                    # snap alias
+        Mock(stdout="release version 19"),  # jobbergate --version
     ]
 
 
@@ -118,7 +119,19 @@ def test_install(harness, patched_run, install_subprocesses):
             encoding=ANY,
         ),
         call(
-            ["/snap/bin/jobbergate-cli.jobbergate", "--version"],
+            [
+                "snap",
+                "alias",
+                "jobbergate-cli.jobbergate",
+                "jobbergate",
+            ],
+            stdout=ANY,
+            stderr=ANY,
+            check=False,
+            encoding=ANY,
+        ),
+        call(
+            ["/snap/bin/jobbergate", "--version"],
             stdout=ANY,
             stderr=ANY,
             check=False,

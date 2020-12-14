@@ -17,7 +17,8 @@ log = logging.getLogger()
 
 ENCODING = "utf-8"
 SNAP_INSTALL = "snap install --classic --dangerous {snap_res}"
-JOBBERGATE_VERSION = "/snap/bin/jobbergate-cli.jobbergate --version"
+SNAP_ALIAS = "snap alias jobbergate-cli.jobbergate jobbergate"
+JOBBERGATE_VERSION = "/snap/bin/jobbergate --version"
 VERSION_RX = re.compile(r"version (\S+)\b")
 READ_CHUNK = 65536
 
@@ -84,6 +85,7 @@ class CharmJobbergate(CharmBase):
         Use snap to install the resource we just fetched and set properties about it
         """
         run(SNAP_INSTALL, snap_res=res)
+        run(SNAP_ALIAS)
         ver = run(JOBBERGATE_VERSION).stdout
         ver = VERSION_RX.search(ver).group(1)
         self.model.unit.set_workload_version(ver)
