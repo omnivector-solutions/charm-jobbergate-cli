@@ -17,7 +17,7 @@ charmcraft build
 
 ```yaml
 jobbergate-cli:
-  jobbergate-api-backend-base-url: "<jobbergate-api-backend>"
+  backend-base-url: "<jobbergate-api-backend-base-url>"
   pypi-url: "<pypi-url>"
   pypi-username: "<pypi-username>"
   pypi-password: "<pypi-password>"

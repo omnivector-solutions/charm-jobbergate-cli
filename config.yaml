@@ -1,5 +1,5 @@
 options:
-  jobbergate-api-backend-base-url:
+  backend-base-url:
     type: string
     default:
     description: |
