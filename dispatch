@@ -6,8 +6,6 @@ set -e
 # Source the os-release information into the env.
 . /etc/os-release
 
-PYTHON38_VERSION="3.8.8"
-
 if ! [[ -f '.installed' ]]; then
     # Determine if we are running in centos or ubuntu, if centos
     # provision the needed prereqs.

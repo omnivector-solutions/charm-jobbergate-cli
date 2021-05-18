@@ -19,7 +19,7 @@ class JobbergateCliOps:
     _ETC_DEFAULT = Path("/etc/default/jobbergate-cli")
     _SYSTEMD_BASE_PATH = Path("/usr/lib/systemd/system")
     _JOBBERGATE_CLI_VENV_DIR = Path("/srv/jobbergate-cli-venv")
-    _PIP_CMD = _JOBBERGATE_CLI_VENV_DIR.joinpath("bin", "pip3.8").as_posix()
+    _PIP_CMD = _JOBBERGATE_CLI_VENV_DIR.joinpath("bin", "pip3").as_posix()
 
     def __init__(self, charm):
         """Initialize jobbergate-cli-ops."""
@@ -41,7 +41,7 @@ class JobbergateCliOps:
 
         # Create the virtualenv
         create_venv_cmd = [
-            "python3.8",
+            "python3",
             "-m",
             "venv",
             self._JOBBERGATE_CLI_VENV_DIR.as_posix(),
