@@ -4,6 +4,8 @@ JobbergateCliOps.
 import logging
 import subprocess
 
+from shutil import rmtree
+
 from pathlib import Path
 
 
