@@ -12,16 +12,16 @@ if ! [[ -f '.installed' ]]; then
     if [[ $ID == 'centos' ]]; then 
 	# Determine the centos version and install prereqs accordingly
         major=$(cat /etc/centos-release | tr -dc '0-9.'|cut -d \. -f1)
-        if [[ $major == "7" ]]; then
+	if [[ $major == "7" ]]; then
 	    # Install yaml deps
 	    yum -y install libyaml-devel
 	    # Install python3 using yum (will install python3.6 on centos7)
-            if ! type -a python3; then
+	    if ! type -a python3; then
                 echo "Running centos$major, installing prereqs."
 		# Install system python3
 		yum -y install epel-release
                 yum -y install python3
-	    fi
+            fi
         else
             echo "Running unsuppored version of centos: $major"
             exit -1
