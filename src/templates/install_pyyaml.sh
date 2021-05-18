@@ -7,6 +7,6 @@ PWD=`pwd`
 wget http://pyyaml.org/download/pyyaml/${PYYAML_VERSION}.tar.gz
 tar -xzvf ${PYYAML_VERSION}.tar.gz -C /tmp/
 cd /tmp/${PYYAML_VERSION}
-/srv/jobbergate-cli-venv/bin/python3.8 setup.py install
+/srv/jobbergate-cli-venv/bin/python3 setup.py install
 cd ${PWD}
 rm -rf /tmp/${PYYAML_VERSION}
