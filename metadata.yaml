@@ -4,6 +4,7 @@ maintainers:
     - Omnivector Solutions <info@omnivector.solutions>
 description: |
     This charm provides the cli component of jobbergate.
+
 tags:
     - jobbergate
     - hpc

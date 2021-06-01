@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""JobbergateCLICharm."""
+"""JobbergateCLICharm"""
 import logging
 
 from ops.charm import CharmBase
 from ops.framework import StoredState
 from ops.main import main
-from ops.model import ActiveStatus
+from ops.model import ActiveStatus, BlockedStatus
 
 from jobbergate_cli_ops import JobbergateCliOps
 
@@ -14,7 +14,7 @@ logger = logging.getLogger()
 
 
 class JobbergateCliCharm(CharmBase):
-    """Facilitate Jobbergate CLI lifecycle."""
+    """Facilitate Jobbergate lifecycle."""
 
     _stored = StoredState()
 
@@ -23,16 +23,13 @@ class JobbergateCliCharm(CharmBase):
         super().__init__(*args)
 
         self._stored.set_default(installed=False)
-        self._stored.set_default(backend_base_url=str())
 
         self._jobbergate_cli_ops = JobbergateCliOps(self)
 
         event_handler_bindings = {
             self.on.install: self._on_install,
-            self.on.start: self._on_start,
-            self.on.config_changed: self._on_config_changed,
             self.on.remove: self._on_remove,
-            self.on.upgrade_action: self._upgrade_jobbergate_cli,
+            self.on.upgrade_action: self._on_upgrade_action,
         }
         for event, handler in event_handler_bindings.items():
             self.framework.observe(event, handler)
@@ -42,24 +39,36 @@ class JobbergateCliCharm(CharmBase):
         self._jobbergate_cli_ops.install()
         self._stored.installed = True
         # Log and set status
-        logger.debug("jobbergate-cli agent installed")
+        logger.debug("jobbergate-cli installed")
         self.unit.status = ActiveStatus("jobbergate-cli installed")
+
+    def _on_remove(self, event):
+        """Remove directories and files created by jobbergate-cli charm."""
+        self._jobbergate_cli_ops.remove()
+
+    def _on_upgrade_action(self, event):
+        version = event.params["version"]
+        self._jobbergate_cli_ops.upgrade(version)
 
     def _on_config_changed(self, event):
         """Configure jobbergate-cli."""
 
-        # Get the backend-base-url from the charm config and check if it has changed.
-        backend_base_url_from_config = self.model.config.get("backend-base-url")
-        if backend_base_url_from_config != self._stored.backend_base_url:
-            self._stored.backend_base_url = backend_base_url_from_config
+        # Get the backend-url from the charm config
+        backend_base_url = self.model.config.get("backend-base-url")
 
-    def _on_remove(self, event):
-        """Remove directories and files created by jobbergate-cli charm."""
-        self._jobbergate_cli_ops.remove_jobbergate_cli()
+        if not backend_base_url:
+            logger.dedub("Need backend base url")
+            self.unit.status = BlockedStatus("Need 'backend-base-url'")
+            event.defer()
+            return
 
-    def _upgrade_to_latest(self, event):
-        version = event.params["version"]
-        self._jobbergate_cli_ops.upgrade(version)
+        if backend_base_url != self._stored.backend_base_url:
+            self._stored.backend_base_url = backend_base_url
+
+        ctxt = {
+            "backend_base_url": backend_base_url,
+        }
+        self._jobbergate_cli_ops.configure_etc_default(ctxt)
 
 
 if __name__ == "__main__":
