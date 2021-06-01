@@ -1,119 +1,76 @@
 #!/usr/bin/env python3
-"""Jobbergate-cli charm."""
-from hashlib import sha256
+"""JobbergateCLICharm"""
 import logging
-import re
-import shlex
-import subprocess
 
 from ops.charm import CharmBase
 from ops.framework import StoredState
 from ops.main import main
-from ops.model import ActiveStatus
+from ops.model import ActiveStatus, BlockedStatus
+
+from jobbergate_cli_ops import JobbergateCliOps
 
 
-log = logging.getLogger()
+logger = logging.getLogger()
 
 
-ENCODING = "utf-8"
-SNAP_INSTALL = "snap install --classic --dangerous {snap_res}"
-SNAP_ALIAS = "snap alias jobbergate-cli.jobbergate jobbergate"
-JOBBERGATE_VERSION = "/snap/bin/jobbergate --version"
-VERSION_RX = re.compile(r"version (\S+)\b")
-READ_CHUNK = 65536
-
-
-def run(template, **kwargs):
-    """
-    Run the command with kwargs formatted into the template
-    """
-    format_args = {k: shlex.quote(str(v)) for (k, v) in kwargs.items()}
-    cmd = template.format(**format_args)
-    ret = subprocess.run(
-        shlex.split(cmd),
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        check=False,
-        encoding=ENCODING,
-    )
-    try:
-        ret.check_returncode()
-        return ret
-    except subprocess.CalledProcessError:
-        # downgrade non-ascii text to ascii for unpredictable log contexts
-        log.error("\n".join([f"** failed {cmd!r}:", f"{ascii(ret.stdout)}"]))
-        raise
-
-
-def digest_file(filename):
-    """
-    Digest the contents of ``filename'' with sha256 -> hexdigest
-    """
-    hash_ = sha256()
-
-    with open(filename, "rb") as opened:
-        buf = opened.read(READ_CHUNK)
-        while len(buf) > 0:
-            hash_.update(buf)
-            buf = opened.read(READ_CHUNK)
-
-    return hash_.hexdigest()
-
-
-class CharmJobbergate(CharmBase):
-    """Jobbergate."""
+class JobbergateCliCharm(CharmBase):
+    """Facilitate Jobbergate lifecycle."""
 
     _stored = StoredState()
 
     def __init__(self, *args):
-        """Initialize charm and configure states and events to observe."""
+        """Initialize and observe."""
         super().__init__(*args)
 
-        self._stored.set_default(
-            last_snap_digest="",
-        )
+        self._stored.set_default(backend_base_url=str())
+
+        self._jobbergate_cli_ops = JobbergateCliOps(self)
 
         event_handler_bindings = {
             self.on.install: self._on_install,
-            self.on.upgrade_charm: self._on_upgrade_charm,
+            self.on.config_changed: self._on_config_changed,
+            self.on.remove: self._on_remove,
+            self.on.upgrade_action: self._on_upgrade_action,
         }
         for event, handler in event_handler_bindings.items():
             self.framework.observe(event, handler)
 
-    def install_snap_resource(self, res):
-        """
-        Use snap to install the resource we just fetched and set properties about it
-        """
-        run(SNAP_INSTALL, snap_res=res)
-        run(SNAP_ALIAS)
-        ver = run(JOBBERGATE_VERSION).stdout
-        ver = VERSION_RX.search(ver).group(1)
-        self.model.unit.set_workload_version(ver)
-        log.info(f"Installed version {ver}")
-
     def _on_install(self, event):
-        """Install the jobbergate-cli snap."""
-        snap_res = self.model.resources.fetch("jobbergate-snap")
-        digest = digest_file(snap_res)
-        self.install_snap_resource(res=snap_res)
-        self._stored.last_snap_digest = digest
-        self.unit.status = ActiveStatus("Jobbergate Installed")
+        """Install jobbergate-cli."""
+        self._jobbergate_cli_ops.install()
+        self._stored.installed = True
+        # Log and set status
+        logger.debug("jobbergate-cli installed")
+        self.unit.status = ActiveStatus("jobbergate-cli installed")
 
-    def _on_upgrade_charm(self, event):
-        """Upgrade the charm."""
-        snap_res = self.model.resources.fetch("jobbergate-snap")
-        digest = digest_file(snap_res)
-        # only process this as an upgrade if the snap has actually changed
-        if digest != self._stored.last_snap_digest:
-            self.install_snap_resource(res=snap_res)
-            self._stored.last_snap_digest = digest
-            self.unit.status = ActiveStatus("Jobbergate upgraded")
-        else:
-            # status is unchanged but replace the message
-            _was = self.unit.status.name
-            _new = self.unit.status.from_name(_was, "skipping upgrade, snap unchanged")
-            self.unit.status = _new
+    def _on_remove(self, event):
+        """Remove directories and files created by jobbergate-cli charm."""
+        self._jobbergate_cli_ops.remove()
+
+    def _on_upgrade_action(self, event):
+        version = event.params["version"]
+        self._jobbergate_cli_ops.upgrade(version)
+
+    def _on_config_changed(self, event):
+        """Configure jobbergate-cli."""
+
+        # Get the backend-url from the charm config
+        backend_base_url = self.model.config.get("backend-base-url")
+
+        if not backend_base_url:
+            logger.dedub("Need backend base url")
+            self.unit.status = BlockedStatus("Need 'backend-base-url'")
+            event.defer()
+            return
+
+        if backend_base_url != self._stored.backend_base_url:
+            self._stored.backend_base_url = backend_base_url
+
+        ctxt = {
+            "backend_base_url": backend_base_url,
+        }
+        self._jobbergate_cli_ops.configure_etc_default(ctxt)
 
 
-if __name__ == "__main__":  # pragma: nocoverage
-    main(CharmJobbergate)
+if __name__ == "__main__":
+    main(JobbergateCliCharm)

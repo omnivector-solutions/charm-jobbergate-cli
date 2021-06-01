@@ -1,0 +1,34 @@
+#!/bin/bash
+# This hook installs the centos dependencies needed to run the charm.
+
+set -e
+
+# Source the os-release information into the env.
+. /etc/os-release
+
+if ! [[ -f '.installed' ]]; then
+    # Determine if we are running in centos or ubuntu, if centos
+    # provision the needed prereqs.
+    if [[ $ID == 'centos' ]]; then 
+        yum -y install wget
+        # Determine the centos version and install prereqs accordingly
+        major=$(cat /etc/centos-release | tr -dc '0-9.'|cut -d \. -f1)
+        if [[ $major == "7" ]]; then
+            # Install yaml deps
+            yum -y install libyaml-devel
+            # Install python3 using yum (will install python3.6 on centos7)
+            if ! type -a python3; then
+                echo "Running centos$major, installing prereqs."
+                # Install system python3
+                yum -y install epel-release
+                yum -y install python3
+            fi
+        else
+            echo "Running unsuppored version of centos: $major"
+            exit -1
+        fi
+    fi
+    touch .installed
+fi
+
+JUJU_DISPATCH_PATH="${JUJU_DISPATCH_PATH:-$0}" PYTHONPATH=lib:venv ./src/charm.py

@@ -1,29 +1,14 @@
-name: jobbergate
-summary: jobbergate command line interface for HPC cluster
+name: jobbergate-cli
+summary: Jobbergate CLI
 maintainers:
-    - OmniVector Solutions
+    - Omnivector Solutions <info@omnivector.solutions>
 description: |
-        Installs the jobbergate cli snap
+    This charm provides the cli component of jobbergate.
+
 tags:
-    - test
+    - jobbergate
+    - hpc
 
 series:
-    - focal
     - centos7
-    - bionic
-
-subordinate: true
-
-requires:
-
-  juju-info:
-    interface: juju-info
-    scope: container
-
-resources:
-
-  jobbergate-snap:
-    type: file
-    filename: jobbergate.snap
-    description: jobbergate-cli snapfile
-
+    - focal
