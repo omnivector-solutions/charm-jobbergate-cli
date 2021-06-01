@@ -22,12 +22,13 @@ class JobbergateCliCharm(CharmBase):
         """Initialize and observe."""
         super().__init__(*args)
 
-        self._stored.set_default(installed=False)
+        self._stored.set_default(backend_base_url=str())
 
         self._jobbergate_cli_ops = JobbergateCliOps(self)
 
         event_handler_bindings = {
             self.on.install: self._on_install,
+            self.on.config_changed: self._on_config_changed,
             self.on.remove: self._on_remove,
             self.on.upgrade_action: self._on_upgrade_action,
         }

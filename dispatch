@@ -10,6 +10,7 @@ if ! [[ -f '.installed' ]]; then
     # Determine if we are running in centos or ubuntu, if centos
     # provision the needed prereqs.
     if [[ $ID == 'centos' ]]; then 
+        yum -y install wget
         # Determine the centos version and install prereqs accordingly
         major=$(cat /etc/centos-release | tr -dc '0-9.'|cut -d \. -f1)
         if [[ $major == "7" ]]; then

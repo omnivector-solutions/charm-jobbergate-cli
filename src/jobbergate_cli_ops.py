@@ -20,6 +20,7 @@ class JobbergateCliOps:
     _VENV_DIR = Path("/srv/jobbergate-cli-venv")
     _PIP_CMD = _VENV_DIR.joinpath("bin", "pip3").as_posix()
     _ETC_DEFAULT = Path("/etc/default/jobbergate-cli")
+    _PROFILE = Path("/etc/profile.d/jobbergate-cli.sh")
 
     def __init__(self, charm):
         """Create class level variables."""
@@ -59,6 +60,17 @@ class JobbergateCliOps:
         ]
         subprocess.call(upgrade_pip_cmd)
 
+        # Ensure we have the latest pip
+        #install_pyyaml_cmd = [
+        #    self._PIP_CMD,
+        #    "install",
+        #    "--upgrade",
+        #    "pyyaml",
+        #]
+        #subprocess.call(install_pyyaml_cmd)
+        # Install PyYAML
+        subprocess.call(["./src/templates/install_pyyaml.sh"])
+
         # Install package from private pypi
         pip_install_cmd = [
             self._PIP_CMD,
@@ -74,6 +86,10 @@ class JobbergateCliOps:
             )
         else:
             logger.debug(f"{self._PACKAGE_NAME} installed")
+
+        self._PROFILE.write_text(
+            f"export PATH=$PATH:{self._VENV_DIR.as_posix()}/bin"
+        )
 
     def upgrade(self, version: str):
         """Upgrade armada-agent."""
@@ -102,7 +118,7 @@ class JobbergateCliOps:
 
     def configure_etc_default(self, ctxt):
         """Render and write out the file."""
-        backend_base_url = ctxt.get("base_api_url")
+        backend_base_url = ctxt.get("backend_base_url")
         log_dir = self._LOG_DIR.as_posix()
 
         ctxt_to_render = {

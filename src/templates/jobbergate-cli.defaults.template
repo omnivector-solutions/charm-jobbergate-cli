@@ -1,2 +1,1 @@
-JOBBERGATE_CLI_BACKEND_BASE_URL={backend_base_url}
-JOBBERGATE_CLI_LOG_DIR={log_base_dir}
+JOBBERGATE_API_ENDPOINT={backend_base_url}
