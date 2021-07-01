@@ -60,14 +60,6 @@ class JobbergateCliOps:
         ]
         subprocess.call(upgrade_pip_cmd)
 
-        # Ensure we have the latest pip
-        #install_pyyaml_cmd = [
-        #    self._PIP_CMD,
-        #    "install",
-        #    "--upgrade",
-        #    "pyyaml",
-        #]
-        #subprocess.call(install_pyyaml_cmd)
         # Install PyYAML
         subprocess.call(["./src/templates/install_pyyaml.sh"])
 
@@ -98,7 +90,8 @@ class JobbergateCliOps:
             "install",
             "--upgrade",
             "-f",
-            f"{self._derived_pypi_url()}=={version}",
+            self._derived_pypi_url(),
+            f"{self._PACKAGE_NAME}=={version}",
         ]
 
         out = subprocess.check_output(pip_install_cmd).decode().strip()
