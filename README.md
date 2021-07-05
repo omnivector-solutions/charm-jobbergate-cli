@@ -6,9 +6,10 @@ Follow the steps below to get started.
 
 ### Build the charm
 
-Running the following command will produce a .charm file, `jobbergate-cli.charm`
+Running the following command will produce a `.charm` file, `jobbergate-cli.charm`:
+
 ```bash
-charmcraft build
+$ make charm
 ```
 
 ### Create the jobbergate-cli charm config
