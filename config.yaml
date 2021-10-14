@@ -19,4 +19,8 @@ options:
     default:
     description: |
       PYPI PASSWORD
- 
+  version:
+    type: string
+    default:
+    description: |
+      The vesion of the jobbergate-cli package to install

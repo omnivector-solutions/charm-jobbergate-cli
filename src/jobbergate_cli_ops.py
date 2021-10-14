@@ -31,8 +31,7 @@ class JobbergateCliOps:
         url = url.split("://")[1]
         pypi_username = self._charm.model.config["pypi-username"]
         pypi_password = self._charm.model.config["pypi-password"]
-        return (f"https://{pypi_username}:{pypi_password}@"
-                f"{url}/simple/{self._PACKAGE_NAME}")
+        return f"https://{pypi_username}:{pypi_password}@{url}/simple"
 
     def install(self):
         """Install package from private pypi."""
@@ -64,20 +63,24 @@ class JobbergateCliOps:
         subprocess.call(["./src/templates/install_pyyaml.sh"])
 
         # Install package from private pypi
+        package_version = self._charm.model.config.get("version")
+        target_package = self._PACKAGE_NAME
+        if package_version:
+            target_package += f"=={self._charm.model.config['version']}"
         pip_install_cmd = [
             self._PIP_CMD,
             "install",
-            "-f",
+            "--index-url",
             self._derived_pypi_url(),
-            self._PACKAGE_NAME,
+            target_package,
         ]
         out = subprocess.check_output(pip_install_cmd).decode().strip()
         if "Successfully installed" not in out:
             logger.error(
-                f"Trouble installing {self._PACKAGE_NAME}, please debug"
+                f"Trouble installing {target_package}, please debug"
             )
         else:
-            logger.debug(f"{self._PACKAGE_NAME} installed")
+            logger.debug(f"{target_package} installed")
 
         self._PROFILE.write_text(
             f"export PATH=$PATH:{self._VENV_DIR.as_posix()}/bin"
@@ -89,7 +92,7 @@ class JobbergateCliOps:
             self._PIP_CMD,
             "install",
             "--upgrade",
-            "-f",
+            "--index-url",
             self._derived_pypi_url(),
             f"{self._PACKAGE_NAME}=={version}",
         ]
