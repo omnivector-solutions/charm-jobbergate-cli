@@ -76,9 +76,7 @@ class JobbergateCliOps:
         ]
         out = subprocess.check_output(pip_install_cmd).decode().strip()
         if "Successfully installed" not in out:
-            logger.error(
-                f"Trouble installing {target_package}, please debug"
-            )
+            logger.error(f"Error installing {target_package}")
         else:
             logger.debug(f"{target_package} installed")
 
