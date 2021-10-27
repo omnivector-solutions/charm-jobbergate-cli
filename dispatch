@@ -9,7 +9,7 @@ set -e
 if ! [[ -f '.installed' ]]; then
     # Determine if we are running in centos or ubuntu, if centos
     # provision the needed prereqs.
-    if [[ $ID == 'centos' ]]; then 
+    if [[ $ID == 'centos' ]]; then
         yum -y install wget
         # Determine the centos version and install prereqs accordingly
         major=$(cat /etc/centos-release | tr -dc '0-9.'|cut -d \. -f1)
@@ -27,6 +27,9 @@ if ! [[ -f '.installed' ]]; then
             echo "Running unsuppored version of centos: $major"
             exit -1
         fi
+    elif [[ $ID == 'ubuntu' ]]; then
+        # pip and venv are not installed in ubuntu by default. Install them
+        apt install -y python3-pip python3-venv
     fi
     touch .installed
 fi

@@ -5,6 +5,12 @@ maintainers:
 description: |
     This charm provides the cli component of jobbergate.
 
+subordinate: true
+requires:
+  juju-info:
+    interface: juju-info
+    scope: container
+
 tags:
     - jobbergate
     - hpc

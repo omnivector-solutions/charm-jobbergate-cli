@@ -24,6 +24,14 @@ jobbergate-cli:
   pypi-password: "<pypi-password>"
 ```
 
+If you wish to install a particular version of jobbergate-cli, you may add it in
+`jobbergate-cli.yaml` also:
+
+```yaml
+jobbergate-cli:
+  version: 1.0.6
+```
+
 ### Deploy the charm
 Using the built charm and the defined config, run the command to deploy the charm.
 ```bash
