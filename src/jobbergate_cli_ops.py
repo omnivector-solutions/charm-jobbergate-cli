@@ -112,12 +112,10 @@ class JobbergateCliOps:
 
     def configure_etc_default(self, ctxt):
         """Render and write out the file."""
-        backend_base_url = ctxt.get("backend_base_url")
-        log_dir = self._LOG_DIR.as_posix()
 
         ctxt_to_render = {
-            "backend_base_url": backend_base_url,
-            "log_dir": log_dir,
+            "log_dir": self._LOG_DIR.as_posix(),
+            **ctxt,
         }
 
         env_template = Path(

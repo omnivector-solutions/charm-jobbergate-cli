@@ -1,1 +1,5 @@
-JOBBERGATE_API_ENDPOINT={backend_base_url}
+JOBBERGATE_API_ENDPOINT={backend-base-url}
+SENTRY_DSN={sentry-dsn}
+JOBBERGATE_S3_LOG_BUCKET={s3-log-bucket}
+JOBBERGATE_AWS_ACCESS_KEY_ID={aws-access-key-id}
+JOBBERGATE_AWS_SECRET_ACCESS_KEY={aws-secret-access-key}
