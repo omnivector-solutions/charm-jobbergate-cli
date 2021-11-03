@@ -24,3 +24,23 @@ options:
     default:
     description: |
       The vesion of the jobbergate-cli package to install. If blank, install latest.
+  sentry-dsn:
+    type: string
+    default:
+    description: |
+      An optional URL for the Sentry DSN for capturing error events
+  s3-log-bucket:
+    type: string
+    default:
+    description: |
+      The log bucket where user logs may be uploaded
+  aws-access-key-id:
+    type: string
+    default:
+    description: |
+      The AWS access key ID needed for uploading user logs to S3
+  aws-secret-access-key:
+    type: string
+    default:
+    description: |
+      The AWS secret access key needed for uploading user logs to S3

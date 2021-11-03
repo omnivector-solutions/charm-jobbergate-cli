@@ -54,11 +54,20 @@ class JobbergateCliCharm(CharmBase):
     def _on_config_changed(self, event):
         """Configure jobbergate-cli."""
 
-        # Get the backend-url from the charm config
-        backend_base_url = self.model.config.get("backend-base-url")
+        # Get settings from the charm config
+        ctxt_keys = {
+            "backend-base-url",
+            "sentry-dsn",
+            "s3-log-bucket",
+            "aws-access-key-id",
+            "aws-secret-access-key",
+        }
+        ctxt = {k: self.model.config.get(k) for k in ctxt_keys}
+
+        backend_base_url = ctxt.get("backend-base-url")
 
         if not backend_base_url:
-            logger.dedub("Need backend base url")
+            logger.debug("Need backend base url")
             self.unit.status = BlockedStatus("Need 'backend-base-url'")
             event.defer()
             return
@@ -66,9 +75,6 @@ class JobbergateCliCharm(CharmBase):
         if backend_base_url != self._stored.backend_base_url:
             self._stored.backend_base_url = backend_base_url
 
-        ctxt = {
-            "backend_base_url": backend_base_url,
-        }
         self._jobbergate_cli_ops.configure_etc_default(ctxt)
 
 
