@@ -3,3 +3,7 @@ SENTRY_DSN={sentry-dsn}
 JOBBERGATE_S3_LOG_BUCKET={s3-log-bucket}
 JOBBERGATE_AWS_ACCESS_KEY_ID={aws-access-key-id}
 JOBBERGATE_AWS_SECRET_ACCESS_KEY={aws-secret-access-key}
+AUTH0_DOMAIN={{ auth0-domain }}
+AUTH0_AUDIENCE={{ auth0-audience }}
+AUTH0_CLIENT_ID={{ auth0-client-id }}
+AUTH0_CLIENT_SECRET={{ auth0-client-secret }}
