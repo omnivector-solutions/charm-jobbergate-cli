@@ -44,3 +44,23 @@ options:
     default:
     description: |
       The AWS secret access key needed for uploading user logs to S3
+  auth0-domain:
+    type: string
+    default:
+    description: |
+      Domain for the Auth0 API where auth tokens will be fetched.
+  auth0-audience:
+    type: string
+    default:
+    description: |
+      Audience for the Auth0 issued tokens.
+  auth0-client-id:
+    type: string
+    default:
+    description: |
+      The ID for the Auth0 app client to which tokens will be issued.
+  auth0-client-secret:
+    type: string
+    default:
+    description: |
+      The secret key for the Auth0 app client to which tokens will be issued.

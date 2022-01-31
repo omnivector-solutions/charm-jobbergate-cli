@@ -23,6 +23,10 @@ jobbergate-cli:
   pypi-url: "<pypi-url>"
   pypi-username: "<pypi-username>"
   pypi-password: "<pypi-password>"
+  auth0-domain: "<auth0-domain>"
+  auth0-audience: "<auth0-audience>"
+  auth0-client-id: "<auth0-client-id>"
+  auth0-client-secret: "<auth0-client-secret>"
 ```
 
 
