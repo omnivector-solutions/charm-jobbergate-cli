@@ -2,6 +2,7 @@
 JobbergateCliOps.
 """
 import logging
+import shlex
 import subprocess
 
 from shutil import rmtree
@@ -58,9 +59,15 @@ class JobbergateCliOps:
             "--upgrade",
             "pip",
         ]
-        subprocess.call(upgrade_pip_cmd)
+        logger.debug(f"Upgrading pip with command: {shlex.join(upgrade_pip_cmd)}")
+        out = subprocess.check_output(upgrade_pip_cmd).decode().strip()
+        if "Successfully installed" not in out:
+            logger.error(f"Trouble upgrading pip, please debug: {out}")
+        else:
+            logger.debug("Pip upgraded")
 
         # Install PyYAML
+        logger.debug("Installing pyyaml via script")
         subprocess.call(["./src/templates/install_pyyaml.sh"])
 
         # Install package from private pypi
@@ -76,6 +83,7 @@ class JobbergateCliOps:
             self._derived_pypi_url(),
             target_package,
         ]
+        logger.debug(f"Installing package with command: {shlex.join(pip_install_cmd)}")
         out = subprocess.check_output(pip_install_cmd).decode().strip()
         if "Successfully installed" not in out:
             logger.error(f"Error installing {target_package}")
@@ -98,6 +106,7 @@ class JobbergateCliOps:
             f"{self._PACKAGE_NAME}=={version}",
         ]
 
+        logger.debug(f"Upgrading package with command: {shlex.join(pip_install_cmd)}")
         out = subprocess.check_output(pip_install_cmd).decode().strip()
         if "Successfully installed" not in out:
             logger.error(
