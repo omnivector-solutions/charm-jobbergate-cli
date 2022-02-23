@@ -54,6 +54,7 @@ class JobbergateCliOps:
         upgrade_pip_cmd = [
             self._PIP_CMD,
             "install",
+            "--use-deprecated=html5lib",
             "--upgrade",
             "pip",
         ]
@@ -70,6 +71,7 @@ class JobbergateCliOps:
         pip_install_cmd = [
             self._PIP_CMD,
             "install",
+            "--use-deprecated=html5lib",
             "--index-url",
             self._derived_pypi_url(),
             target_package,
@@ -89,6 +91,7 @@ class JobbergateCliOps:
         pip_install_cmd = [
             self._PIP_CMD,
             "install",
+            "--use-deprecated=html5lib",
             "--upgrade",
             "--index-url",
             self._derived_pypi_url(),
