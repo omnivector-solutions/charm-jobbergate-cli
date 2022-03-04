@@ -62,6 +62,7 @@ class JobbergateCliCharm(CharmBase):
             "aws-access-key-id",
             "aws-secret-access-key",
             "auth0-domain",
+            "auth0-login-domain",
             "auth0-audience",
             "auth0-client-id",
             "auth0-client-secret",
