@@ -74,7 +74,7 @@ class JobbergateCliOps:
             self._derived_pypi_url(),
             target_package,
         ]
-        out = subprocess.check_output(pip_install_cmd).decode().strip()
+        out = subprocess.check_output(pip_install_cmd, env={}).decode().strip()
         if "Successfully installed" not in out:
             logger.error(f"Error installing {target_package}")
         else:
@@ -95,7 +95,7 @@ class JobbergateCliOps:
             f"{self._PACKAGE_NAME}=={version}",
         ]
 
-        out = subprocess.check_output(pip_install_cmd).decode().strip()
+        out = subprocess.check_output(pip_install_cmd, env={}).decode().strip()
         if "Successfully installed" not in out:
             logger.error(
                 f"Trouble upgrading {self._PACKAGE_NAME}, please debug"
