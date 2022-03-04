@@ -48,7 +48,12 @@ options:
     type: string
     default:
     description: |
-      Domain for the Auth0 API where auth tokens will be fetched.
+      Domain for the general Auth0 API
+  auth0-login-domain:
+    type: string
+    default:
+    description: |
+      Domain for the Auth0 API where login requests are directed.
   auth0-audience:
     type: string
     default:
