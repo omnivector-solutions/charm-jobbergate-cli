@@ -18,7 +18,7 @@ class JobbergateCliOps:
     _PACKAGE_NAME = "jobbergate-cli"
     _LOG_DIR = Path("/var/log/jobbergate-cli")
     _VENV_DIR = Path("/srv/jobbergate-cli-venv")
-    _PIP_CMD = _VENV_DIR.joinpath("bin", "pip3").as_posix()
+    _VENV_PYTHON = _VENV_DIR.joinpath("bin", "python").as_posix()
     _ETC_DEFAULT = Path("/etc/default/jobbergate-cli")
     _PROFILE = Path("/etc/profile.d/jobbergate-cli.sh")
 
@@ -52,7 +52,9 @@ class JobbergateCliOps:
 
         # Ensure we have the latest pip
         upgrade_pip_cmd = [
-            self._PIP_CMD,
+            self._VENV_PYTHON,
+            "-m",
+            "pip",
             "install",
             "--upgrade",
             "pip",
@@ -68,7 +70,9 @@ class JobbergateCliOps:
         if package_version:
             target_package += f"=={self._charm.model.config['version']}"
         pip_install_cmd = [
-            self._PIP_CMD,
+            self._VENV_PYTHON,
+            "-m",
+            "pip",
             "install",
             "--index-url",
             self._derived_pypi_url(),
@@ -87,7 +91,9 @@ class JobbergateCliOps:
     def upgrade(self, version: str):
         """Upgrade armada-agent."""
         pip_install_cmd = [
-            self._PIP_CMD,
+            self._VENV_PYTHON,
+            "-m",
+            "pip",
             "install",
             "--upgrade",
             "--index-url",
