@@ -69,3 +69,8 @@ options:
     default:
     description: |
       The secret key for the Auth0 app client to which tokens will be issued.
+  compatibility-mode:
+    type: boolean
+    default: true
+    description: |
+      Run jobbergate-cli in compatibility mode.

@@ -8,3 +8,4 @@ AUTH0_LOGIN_DOMAIN={auth0-login-domain}
 AUTH0_AUDIENCE={auth0-audience}
 AUTH0_CLIENT_ID={auth0-client-id}
 AUTH0_CLIENT_SECRET={auth0-client-secret}
+JOBBERGATE_COMPATIBILITY_MODE={compatibility-mode}
