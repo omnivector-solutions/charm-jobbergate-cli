@@ -66,7 +66,7 @@ class JobbergateCliCharm(CharmBase):
             "auth0-audience",
             "auth0-client-id",
             "auth0-client-secret",
-            "compatibilitiy-mode",
+            "compatibility-mode",
         }
         ctxt = {k: self.model.config.get(k) for k in ctxt_keys}
 
