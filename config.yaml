@@ -29,6 +29,11 @@ options:
     default:
     description: |
       An optional URL for the Sentry DSN for capturing error events
+  sentry-env:
+    type: string
+    default: staging
+    description: |
+      Sentry's environment identification, e.g. staging, production, nash-staging
   s3-log-bucket:
     type: string
     default:

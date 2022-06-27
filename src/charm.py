@@ -58,6 +58,7 @@ class JobbergateCliCharm(CharmBase):
         ctxt_keys = {
             "backend-base-url",
             "sentry-dsn",
+            "sentry-env"
             "s3-log-bucket",
             "aws-access-key-id",
             "aws-secret-access-key",
