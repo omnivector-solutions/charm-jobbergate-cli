@@ -1,63 +1,60 @@
 # charm-jobbergate-cli
 
-
-# Usage
+## Usage
 
 Follow the steps below to get started.
 
-## Build the charm
+### Build the charm
 
-Running the following command will produce a `.charm` file, `jobbergate-cli.charm`:
+Running the following command will produce a `.charm` file, `new-jobbergate-cli.charm`:
 
 ```bash
-$ make charm
+make charm
 ```
 
-## Create the jobbergate-cli charm config
+### Create the jobbergate-cli charm config
 
 `jobbergate-cli.yaml`
 
 ```yaml
 jobbergate-cli:
   backend-base-url: "<jobbergate-api-backend-base-url>"
-  pypi-url: "<pypi-url>"
-  pypi-username: "<pypi-username>"
-  pypi-password: "<pypi-password>"
-  auth0-domain: "<auth0-domain>"
-  auth0-audience: "<auth0-audience>"
-  auth0-client-id: "<auth0-client-id>"
-  auth0-client-secret: "<auth0-client-secret>"
+  oidc-domain: "<jobbergate-oidc-domain>"
+  oidc-audience: "<jobbergate-oidc-audience>"
+  oidc-client-id: "<jobbergate-oidc-client-id>"
 ```
 
+### Deploy the charm
 
-## Deploy the charm
 Using the built charm and the defined config, run the command to deploy the charm.
+
 ```bash
 juju deploy ./jobbergate-cli.charm \
     --config ./jobbergate-cli.yaml \
     --series centos7
 ```
 
-## Charm Actions
+### Charm Actions
+
 The jobbergate-cli charm exposes additional functionality to facilitate jobbergate-cli
 package upgrades.
 
 To upgrade the jobbergate-cli to a new version or release:
+
 ```bash
-juju run-action jobbergate-cli/leader upgrade version="7.7.7"
+juju run-action jobbergate-cli/leader upgrade version="3.2.4"
 ```
 
-This will result in the jobbergate-cli package upgrade to 7.7.7.
+This will result in the jobbergate-cli package upgrade to 3.2.4.
 
-
-## Additional Configuration Options
+### Additional Configuration Options
 
 If you wish to install a particular version of jobbergate-cli, you may add it in
 `jobbergate-cli.yaml` also:
 
 ```yaml
 jobbergate-cli:
-  version: 1.0.6
+  version: 3.2.4
 ```
 
 If you need to be able to upload user logs to S3, you will need to include in the config:
@@ -75,6 +72,6 @@ jobbergate-cli:
   sentry-dsn: <sentry_dsn>  # Find this in Sentry Project Settings under "Client Keys".
 ```
 
+## License
 
-# License
 * MIT (see `LICENSE` file in this directory for full preamble)

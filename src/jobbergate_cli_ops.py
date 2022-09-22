@@ -16,22 +16,15 @@ class JobbergateCliOps:
     """Track and perform jobbergate-cli ops."""
 
     _PACKAGE_NAME = "jobbergate-cli"
-    _LOG_DIR = Path("/var/log/jobbergate-cli")
-    _VENV_DIR = Path("/srv/jobbergate-cli-venv")
+    _LOG_DIR = Path("/var/log/new-jobbergate-cli")
+    _VENV_DIR = Path("/srv/new-jobbergate-cli-venv")
     _VENV_PYTHON = _VENV_DIR.joinpath("bin", "python").as_posix()
-    _ETC_DEFAULT = Path("/etc/default/jobbergate-cli")
-    _PROFILE = Path("/etc/profile.d/jobbergate-cli.sh")
+    _ETC_DEFAULT = Path("/etc/default/new-jobbergate-cli")
+    _PROFILE = Path("/etc/profile.d/new-jobbergate-cli.sh")
 
     def __init__(self, charm):
         """Create class level variables."""
         self._charm = charm
-
-    def _derived_pypi_url(self):
-        url = self._charm.model.config["pypi-url"]
-        url = url.split("://")[1]
-        pypi_username = self._charm.model.config["pypi-username"]
-        pypi_password = self._charm.model.config["pypi-password"]
-        return f"https://{pypi_username}:{pypi_password}@{url}/simple"
 
     def install(self):
         """Install package from private pypi."""
@@ -61,10 +54,7 @@ class JobbergateCliOps:
         ]
         subprocess.call(upgrade_pip_cmd)
 
-        # Install PyYAML
-        subprocess.call(["./src/templates/install_pyyaml.sh"])
-
-        # Install package from private pypi
+        # Install package from pypi.org
         package_version = self._charm.model.config.get("version")
         target_package = self._PACKAGE_NAME
         if package_version:
@@ -74,19 +64,17 @@ class JobbergateCliOps:
             "-m",
             "pip",
             "install",
-            "--index-url",
-            self._derived_pypi_url(),
             target_package,
         ]
+
         out = subprocess.check_output(pip_install_cmd, env={}).decode().strip()
+
         if "Successfully installed" not in out:
             logger.error(f"Error installing {target_package}")
         else:
             logger.debug(f"{target_package} installed")
 
-        self._PROFILE.write_text(
-            f"export PATH=$PATH:{self._VENV_DIR.as_posix()}/bin"
-        )
+        self._PROFILE.write_text(f"export PATH=$PATH:{self._VENV_DIR.as_posix()}/bin")
 
     def upgrade(self, version: str):
         """Upgrade armada-agent."""
@@ -96,16 +84,13 @@ class JobbergateCliOps:
             "pip",
             "install",
             "--upgrade",
-            "--index-url",
-            self._derived_pypi_url(),
             f"{self._PACKAGE_NAME}=={version}",
         ]
 
         out = subprocess.check_output(pip_install_cmd, env={}).decode().strip()
+
         if "Successfully installed" not in out:
-            logger.error(
-                f"Trouble upgrading {self._PACKAGE_NAME}, please debug"
-            )
+            logger.error(f"Trouble upgrading {self._PACKAGE_NAME}, please debug")
         else:
             logger.debug(f"{self._PACKAGE_NAME} installed")
 
@@ -125,7 +110,8 @@ class JobbergateCliOps:
         }
 
         env_template = Path(
-            "./src/templates/jobbergate-cli.defaults.template").read_text()
+            "./src/templates/jobbergate-cli.defaults.template"
+        ).read_text()
 
         rendered_template = env_template.format(**ctxt_to_render)
 

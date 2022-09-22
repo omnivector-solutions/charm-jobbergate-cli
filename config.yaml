@@ -4,26 +4,11 @@ options:
     default:
     description: |
       The jobbergate-backend-base-url
-  pypi-url:
-    type: string
-    default:
-    description: |
-      PYPI URL
-  pypi-username:
-    type: string
-    default:
-    description: |
-      PYPI USERNAME
-  pypi-password:
-    type: string
-    default:
-    description: |
-      PYPI PASSWORD
   version:
     type: string
     default:
     description: |
-      The vesion of the jobbergate-cli package to install. If blank, install latest.
+      The vesion of the new-jobbergate-cli package to install. If blank, install latest.
   sentry-dsn:
     type: string
     default:
@@ -49,33 +34,23 @@ options:
     default:
     description: |
       The AWS secret access key needed for uploading user logs to S3
-  auth0-domain:
+  oidc-domain:
     type: string
     default:
     description: |
-      Domain for the general Auth0 API
-  auth0-login-domain:
+      OIDC provider domain
+  oidc-audience:
     type: string
     default:
     description: |
-      Domain for the Auth0 API where login requests are directed.
-  auth0-audience:
+      OIDC provider audience
+  oidc-client-id:
     type: string
     default:
     description: |
-      Audience for the Auth0 issued tokens.
-  auth0-client-id:
-    type: string
-    default:
-    description: |
-      The ID for the Auth0 app client to which tokens will be issued.
-  auth0-client-secret:
-    type: string
-    default:
-    description: |
-      The secret key for the Auth0 app client to which tokens will be issued.
+      Client ID used to issue JWTs
   compatibility-mode:
     type: boolean
     default: true
     description: |
-      Run jobbergate-cli in compatibility mode.
+      Run new-jobbergate-cli in compatibility mode.
