@@ -17,7 +17,7 @@ make charm
 `jobbergate-cli.yaml`
 
 ```yaml
-jobbergate-cli:
+new-jobbergate-cli:
   backend-base-url: "<jobbergate-api-backend-base-url>"
   oidc-domain: "<jobbergate-oidc-domain>"
   oidc-audience: "<jobbergate-oidc-audience>"
