@@ -55,7 +55,7 @@ class JobbergateCliOps:
 
         # Ensure we have the latest pip
         upgrade_pip_cmd = [
-            self.self._VENV_PYTHON,
+            self._VENV_PYTHON,
             "-m",
             "pip",
             "install",
@@ -70,7 +70,7 @@ class JobbergateCliOps:
         if package_version:
             target_package += f"=={self._charm.model.config['version']}"
         pip_install_cmd = [
-            self.self._VENV_PYTHON,
+            self._VENV_PYTHON,
             "-m",
             "pip",
             "install",
@@ -89,7 +89,7 @@ class JobbergateCliOps:
     def upgrade(self, version: str):
         """Upgrade armada-agent."""
         pip_install_cmd = [
-            self.self._VENV_PYTHON,
+            self._VENV_PYTHON,
             "-m",
             "pip",
             "install",
