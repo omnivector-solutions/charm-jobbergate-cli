@@ -115,7 +115,7 @@ class JobbergateCliOps:
         """Render and write out the file."""
 
         ctxt_to_render = {
-            "log_dir": self._LOG_DIR.as_posix(),
+            "log-dir": self._LOG_DIR.as_posix(),
             **ctxt,
         }
 
