@@ -84,8 +84,6 @@ class JobbergateCliOps:
         else:
             logger.debug(f"{target_package} installed")
 
-        self._PROFILE.write_text(f"export PATH=$PATH:{self._VENV_DIR.as_posix()}/bin")
-
     def upgrade(self, version: str):
         """Upgrade armada-agent."""
         pip_install_cmd = [
@@ -110,6 +108,18 @@ class JobbergateCliOps:
         """
         rmtree(self._LOG_DIR.as_posix())
         rmtree(self._VENV_DIR.as_posix())
+
+    def configure_executable_alias(self, alias_name):
+        """
+        Set an alias for the jobbergate executable.
+
+        It aims to avoid conflicts between legacy and new versions of jobbergate-cli.
+        """
+        executable_path = self._VENV_DIR / "bin" / "jobbergate"
+        file_content = "alias {}='{}'".format(alias_name, executable_path.as_posix())
+
+        logger.debug(f"Writing executable alias to {self._PROFILE}: {file_content}")
+        self._PROFILE.write_text(file_content)
 
     def configure_etc_default(self, ctxt):
         """Render and write out the file."""

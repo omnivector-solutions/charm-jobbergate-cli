@@ -66,6 +66,7 @@ class JobbergateCliCharm(CharmBase):
             "oidc-audience",
             "oidc-client-id",
             "compatibility-mode",
+            "alias-name",
         }
         ctxt = {k: self.model.config.get(k) for k in ctxt_keys}
 
@@ -81,6 +82,9 @@ class JobbergateCliCharm(CharmBase):
             self._stored.backend_base_url = backend_base_url
 
         self._jobbergate_cli_ops.configure_etc_default(ctxt)
+        self._jobbergate_cli_ops.configure_executable_alias(
+            alias_name=ctxt.get("alias-name", "jobbergate")
+        )
 
 
 if __name__ == "__main__":

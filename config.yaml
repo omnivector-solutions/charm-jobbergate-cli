@@ -54,3 +54,8 @@ options:
     default: true
     description: |
       Run new-jobbergate-cli in compatibility mode.
+  alias-name:
+    type: string
+    default: "jobbergate"
+    description: |
+      Executable name set using an alias in order to avoid conflicts with legacy jobbergate.
