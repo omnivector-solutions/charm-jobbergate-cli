@@ -17,7 +17,6 @@ class JobbergateCliOps:
 
     _PYTHON_BIN = Path("/usr/bin/python3.8")
     _PACKAGE_NAME = "jobbergate-cli"
-    _LOG_DIR = Path("/var/log/new-jobbergate-cli")
     _VENV_DIR = Path("/srv/new-jobbergate-cli-venv")
     _VENV_PYTHON = _VENV_DIR.joinpath("bin", "python").as_posix()
     _ETC_DEFAULT = Path("/etc/default/jobbergate-cli")
@@ -29,10 +28,6 @@ class JobbergateCliOps:
 
     def install(self):
         """Install package from private pypi."""
-
-        # Create log dir
-        if not self._LOG_DIR.exists():
-            self._LOG_DIR.mkdir(parents=True)
 
         # Create the virtualenv
         create_venv_cmd = [
@@ -106,7 +101,6 @@ class JobbergateCliOps:
         """
         Remove the things we have created.
         """
-        rmtree(self._LOG_DIR.as_posix())
         rmtree(self._VENV_DIR.as_posix())
 
     def configure_executable_alias(self, alias_name):
@@ -125,7 +119,6 @@ class JobbergateCliOps:
         """Render and write out the file."""
 
         ctxt_to_render = {
-            "log-dir": self._LOG_DIR.as_posix(),
             **ctxt,
         }
 
