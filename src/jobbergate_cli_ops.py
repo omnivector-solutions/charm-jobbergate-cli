@@ -19,7 +19,7 @@ class JobbergateCliOps:
     _PACKAGE_NAME = "jobbergate-cli"
     _VENV_DIR = Path("/srv/new-jobbergate-cli-venv")
     _VENV_PYTHON = _VENV_DIR.joinpath("bin", "python").as_posix()
-    _ETC_DEFAULT = Path("/etc/default/jobbergate-cli")
+    _ETC_DEFAULT = Path("/etc/default/jobbergate3-cli")
     _PROFILE = Path("/etc/profile.d/new-jobbergate-cli.sh")
 
     def __init__(self, charm):
