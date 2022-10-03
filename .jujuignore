@@ -3,5 +3,5 @@
 /.tox
 __pycache__
 
-/jobbergate-cli
+/new-jobbergate-cli
 /.vscode

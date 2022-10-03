@@ -40,11 +40,11 @@ class JobbergateCliCharm(CharmBase):
         self._jobbergate_cli_ops.install()
         self._stored.installed = True
         # Log and set status
-        logger.debug("jobbergate-cli installed")
-        self.unit.status = ActiveStatus("jobbergate-cli installed")
+        logger.debug("new-jobbergate-cli installed")
+        self.unit.status = ActiveStatus("new-jobbergate-cli installed")
 
     def _on_remove(self, event):
-        """Remove directories and files created by jobbergate-cli charm."""
+        """Remove directories and files created by new-jobbergate-cli charm."""
         self._jobbergate_cli_ops.remove()
 
     def _on_upgrade_action(self, event):
@@ -62,12 +62,11 @@ class JobbergateCliCharm(CharmBase):
             "s3-log-bucket",
             "aws-access-key-id",
             "aws-secret-access-key",
-            "auth0-domain",
-            "auth0-login-domain",
-            "auth0-audience",
-            "auth0-client-id",
-            "auth0-client-secret",
+            "oidc-domain",
+            "oidc-audience",
+            "oidc-client-id",
             "compatibility-mode",
+            "alias-name",
         }
         ctxt = {k: self.model.config.get(k) for k in ctxt_keys}
 
@@ -83,6 +82,9 @@ class JobbergateCliCharm(CharmBase):
             self._stored.backend_base_url = backend_base_url
 
         self._jobbergate_cli_ops.configure_etc_default(ctxt)
+        self._jobbergate_cli_ops.configure_executable_alias(
+            alias_name=ctxt.get("alias-name", "jobbergate")
+        )
 
 
 if __name__ == "__main__":

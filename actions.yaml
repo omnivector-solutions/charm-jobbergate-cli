@@ -1,9 +1,9 @@
 upgrade:
   description: >
-    Upgrade jobbergate-cli.
+    Upgrade new-jobbergate-cli.
   params:
     version:
       type: string
-      description: Version of jobbergate-cli to upgrade to.
+      description: Version of new-jobbergate-cli to upgrade to.
   required:
     - version
