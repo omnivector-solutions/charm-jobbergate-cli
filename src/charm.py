@@ -62,11 +62,6 @@ class JobbergateCliCharm(CharmBase):
             "s3-log-bucket",
             "aws-access-key-id",
             "aws-secret-access-key",
-            "auth0-domain",
-            "auth0-login-domain",
-            "auth0-audience",
-            "auth0-client-id",
-            "auth0-client-secret",
             "compatibility-mode",
         }
         ctxt = {k: self.model.config.get(k) for k in ctxt_keys}
