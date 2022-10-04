@@ -1,9 +1,9 @@
-name: jobbergate-cli
-summary: Jobbergate CLI
+name: new-jobbergate-cli
+summary: Next-gen Jobbergate CLI
 maintainers:
     - Omnivector Solutions <info@omnivector.solutions>
 description: |
-    This charm provides the cli component of jobbergate.
+    This charm provides the cli component of jobbergate >= 3.2.3.
 
 subordinate: true
 requires:
