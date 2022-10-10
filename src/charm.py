@@ -66,6 +66,7 @@ class JobbergateCliCharm(CharmBase):
             "oidc-audience",
             "oidc-client-id",
             "compatibility-mode",
+            "default-cluster-name",
             "alias-name",
         }
         ctxt = {k: self.model.config.get(k) for k in ctxt_keys}
