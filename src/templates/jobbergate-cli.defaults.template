@@ -8,3 +8,4 @@ OIDC_DOMAIN={oidc-domain}
 OIDC_AUDIENCE={oidc-audience}
 OIDC_CLIENT_ID={oidc-client-id}
 JOBBERGATE_COMPATIBILITY_MODE={compatibility-mode}
+DEFAULT_CLUSTER_NAME={default-cluster-name}

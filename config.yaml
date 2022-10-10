@@ -54,6 +54,11 @@ options:
     default: true
     description: |
       Run new-jobbergate-cli in compatibility mode.
+  default-cluster-name:
+    type: string
+    default:
+    description: |
+      Name of the cluster to which jobs should be submitted by default.
   alias-name:
     type: string
     default: "jobbergate"
