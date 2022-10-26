@@ -49,7 +49,13 @@ class JobbergateCliCharm(CharmBase):
 
     def _on_upgrade_action(self, event):
         version = event.params["version"]
-        self._jobbergate_cli_ops.upgrade(version)
+        try:
+            self._jobbergate_cli_ops.upgrade(version)
+            event.set_results({"upgrade": "success"})
+        except Exception:
+            self.unit.status = BlockedStatus("Error upgrading new-jobbergate-cli")
+            event.fail(message="Error upgrading new-jobbergate-cli")
+            event.defer()
 
     def _on_config_changed(self, event):
         """Configure jobbergate-cli."""
