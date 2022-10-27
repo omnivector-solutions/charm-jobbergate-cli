@@ -1,5 +1,5 @@
 # TARGETS
-charm: clean ## Build the charm
+charm: clean version ## Build the charm
 	charmcraft pack
 	cp new-jobbergate-cli_ubuntu-20.04-amd64_centos-7-amd64.charm new-jobbergate-cli.charm
 
@@ -11,6 +11,8 @@ clean: ## Remove .tox and build dirs
 	rm -rf .tox/ venv/ build/
 	rm -f *.charm
 
+version: ## Create/update version file
+	@git describe --tags --dirty --always > version
 
 format:
 	isort src
