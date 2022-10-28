@@ -152,3 +152,6 @@ class JobbergateCliOps:
             self._ETC_DEFAULT.unlink()
 
         self._ETC_DEFAULT.write_text(rendered_template)
+
+        # Clear cache dir
+        self.clear_cache_dir()
