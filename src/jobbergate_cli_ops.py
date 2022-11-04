@@ -79,8 +79,28 @@ class JobbergateCliOps:
         else:
             logger.debug(f"{target_package} installed")
 
+        # Clear cache dir
+        self.clear_cache_dir()
+
+    def clear_cache_dir(self):
+        """Clear the cache dir. Jobbergate-cli will recreate it."""
+
+        CACHE_DIR = Path.home() / ".local/share/jobbergate3"
+
+        if CACHE_DIR.exists():
+            logger.debug(f"Clearing cache dir {CACHE_DIR.as_posix()}")
+            rmtree(CACHE_DIR, ignore_errors=True)
+        else:
+            logger.debug(
+                f"Tried to clean cache dir {CACHE_DIR.as_posix()}, but it does not exist"
+            )
+
     def upgrade(self, version: str):
         """Upgrade armada-agent."""
+
+        # Clear cache dir
+        self.clear_cache_dir()
+
         pip_install_cmd = [
             self._VENV_PYTHON,
             "-m",
@@ -132,3 +152,6 @@ class JobbergateCliOps:
             self._ETC_DEFAULT.unlink()
 
         self._ETC_DEFAULT.write_text(rendered_template)
+
+        # Clear cache dir
+        self.clear_cache_dir()
