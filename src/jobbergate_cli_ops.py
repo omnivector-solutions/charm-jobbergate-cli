@@ -64,7 +64,7 @@ class JobbergateCliOps:
 
         # Install package from private pypi
         package_version = self._charm.model.config.get("version")
-        target_package = self._PACKAGE_NAME
+        target_package = f"{self._PACKAGE_NAME}~=1.0"  # latest legacy version
         if package_version:
             target_package += f"=={self._charm.model.config['version']}"
         pip_install_cmd = [
