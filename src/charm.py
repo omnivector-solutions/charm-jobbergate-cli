@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """JobbergateCLICharm"""
 import logging
+from pathlib import Path
 
 from ops.charm import CharmBase
 from ops.framework import StoredState
@@ -37,11 +38,17 @@ class JobbergateCliCharm(CharmBase):
 
     def _on_install(self, event):
         """Install jobbergate-cli."""
+        self.unit.set_workload_version(Path("version").read_text().strip())
+
         self._jobbergate_cli_ops.install()
         self._stored.installed = True
         # Log and set status
         logger.debug("new-jobbergate-cli installed")
         self.unit.status = ActiveStatus("new-jobbergate-cli installed")
+
+    def _on_upgrade(self, event):
+        """Perform upgrade operations."""
+        self.unit.set_workload_version(Path("version").read_text().strip())
 
     def _on_remove(self, event):
         """Remove directories and files created by new-jobbergate-cli charm."""
