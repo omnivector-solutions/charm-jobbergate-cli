@@ -37,11 +37,14 @@ class JobbergateCliCharm(CharmBase):
 
     def _on_install(self, event):
         """Install jobbergate-cli."""
-        self._jobbergate_cli_ops.install()
-        self._stored.installed = True
-        # Log and set status
-        logger.debug("jobbergate-cli installed")
-        self.unit.status = ActiveStatus("jobbergate-cli installed")
+        is_installed = self._jobbergate_cli_ops.install()
+
+        if is_installed:
+            self._stored.installed = True
+            logger.debug("jobbergate-cli installed")
+            self.unit.status = ActiveStatus("Jobbergate-cli installed")
+        else:
+            self.unit.status = BlockedStatus("Jobbergate-cli not installed")
 
     def _on_remove(self, event):
         """Remove directories and files created by jobbergate-cli charm."""

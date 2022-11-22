@@ -64,9 +64,13 @@ class JobbergateCliOps:
 
         # Install package from private pypi
         package_version = self._charm.model.config.get("version")
-        target_package = f"{self._PACKAGE_NAME}~=1.0"  # latest legacy version
+
+        # latest legacy version
+        target_package = f"{self._PACKAGE_NAME}~=1.0"
+
         if package_version:
             target_package += f"=={self._charm.model.config['version']}"
+
         pip_install_cmd = [
             self._PIP_CMD,
             "install",
@@ -74,18 +78,24 @@ class JobbergateCliOps:
             self._derived_pypi_url(),
             target_package,
         ]
-        out = subprocess.check_output(pip_install_cmd).decode().strip()
-        if "Successfully installed" not in out:
-            logger.error(f"Error installing {target_package}")
-        else:
+
+        try:
+            subprocess.check_output(pip_install_cmd, env={})
+
             logger.debug(f"{target_package} installed")
 
-        self._PROFILE.write_text(
-            f"export PATH=$PATH:{self._VENV_DIR.as_posix()}/bin"
-        )
+            self._PROFILE.write_text(
+                f"export PATH=$PATH:{self._VENV_DIR.as_posix()}/bin"
+            )
+
+            return True
+        except Exception as e:
+            logger.error(f"Error installing {target_package}: {e}")
+
+        return False
 
     def upgrade(self, version: str):
-        """Upgrade armada-agent."""
+        """Upgrade jobbergate-cli."""
         pip_install_cmd = [
             self._PIP_CMD,
             "install",
@@ -95,13 +105,12 @@ class JobbergateCliOps:
             f"{self._PACKAGE_NAME}=={version}",
         ]
 
-        out = subprocess.check_output(pip_install_cmd).decode().strip()
-        if "Successfully installed" not in out:
-            logger.error(
-                f"Trouble upgrading {self._PACKAGE_NAME}, please debug"
-            )
-        else:
+        try:
+            subprocess.check_output(pip_install_cmd, env={})
+
             logger.debug(f"{self._PACKAGE_NAME} installed")
+        except Exception as e:
+            logger.error(f"Error installing {self._PACKAGE_NAME}: {e}")
 
     def remove(self):
         """
