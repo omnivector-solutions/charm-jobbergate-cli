@@ -67,6 +67,7 @@ class JobbergateCliOps:
         target_package = self._PACKAGE_NAME
         if package_version:
             target_package += f"=={self._charm.model.config['version']}"
+
         pip_install_cmd = [
             self._PIP_CMD,
             "install",
@@ -74,7 +75,9 @@ class JobbergateCliOps:
             self._derived_pypi_url(),
             target_package,
         ]
-        out = subprocess.check_output(pip_install_cmd).decode().strip()
+
+        out = subprocess.check_output(pip_install_cmd, env={}).decode().strip()
+
         if "Successfully installed" not in out:
             logger.error(f"Error installing {target_package}")
         else:
@@ -95,7 +98,8 @@ class JobbergateCliOps:
             f"{self._PACKAGE_NAME}=={version}",
         ]
 
-        out = subprocess.check_output(pip_install_cmd).decode().strip()
+        out = subprocess.check_output(pip_install_cmd, env={}).decode().strip()
+
         if "Successfully installed" not in out:
             logger.error(
                 f"Trouble upgrading {self._PACKAGE_NAME}, please debug"
