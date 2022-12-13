@@ -29,6 +29,7 @@ class JobbergateCliCharm(CharmBase):
 
         event_handler_bindings = {
             self.on.install: self._on_install,
+            self.on.upgrade_charm: self._on_upgrade,
             self.on.config_changed: self._on_config_changed,
             self.on.remove: self._on_remove,
             self.on.upgrade_action: self._on_upgrade_action,
