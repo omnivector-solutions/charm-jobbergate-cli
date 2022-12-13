@@ -97,6 +97,20 @@ class JobbergateCliOps:
         else:
             logger.debug(f"{self._PACKAGE_NAME} installed")
 
+    def get_version_info(self):
+        """Show version and info about new-jobbergate-cli."""
+        cmd = [
+            self._VENV_PYTHON,
+            "-m",
+            "pip",
+            "show",
+            self._PACKAGE_NAME
+        ]
+
+        out = subprocess.check_output(cmd, env={}).decode().strip()
+
+        return out
+
     def remove(self):
         """
         Remove the things we have created.
