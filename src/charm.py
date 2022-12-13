@@ -33,6 +33,7 @@ class JobbergateCliCharm(CharmBase):
             self.on.config_changed: self._on_config_changed,
             self.on.remove: self._on_remove,
             self.on.upgrade_action: self._on_upgrade_action,
+            self.on.show_version_action: self._on_show_version_action,
         }
         for event, handler in event_handler_bindings.items():
             self.framework.observe(event, handler)
@@ -63,6 +64,11 @@ class JobbergateCliCharm(CharmBase):
         except Exception:
             self.unit.status = BlockedStatus(f"Error updating to version {version}")
             event.fail()
+
+    def _on_show_version_action(self, event):
+        """Show the info and version of jobbergate-cli."""
+        info = self._jobbergate_cli_ops.get_version_info()
+        event.set_results({"jobbergate-cli": info})
 
     def _on_config_changed(self, event):
         """Configure jobbergate-cli."""
