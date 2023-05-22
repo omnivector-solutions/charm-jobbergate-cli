@@ -6,9 +6,9 @@ options:
       The jobbergate-backend-base-url  
   version:
     type: string
-    default: 1.2.0
+    default: 1.*
     description: |
-      The vesion of the jobbergate-cli package to install. Default is 1.2.0
+      The vesion of the jobbergate-cli package to install. Default is 1.*
   sentry-dsn:
     type: string
     default:
