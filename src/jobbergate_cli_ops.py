@@ -26,15 +26,8 @@ class JobbergateCliOps:
         """Create class level variables."""
         self._charm = charm
 
-    def _derived_pypi_url(self):
-        url = self._charm.model.config["pypi-url"]
-        url = url.split("://")[1]
-        pypi_username = self._charm.model.config["pypi-username"]
-        pypi_password = self._charm.model.config["pypi-password"]
-        return f"https://{pypi_username}:{pypi_password}@{url}/simple"
-
     def install(self):
-        """Install package from private pypi."""
+        """Install package from pypi."""
 
         # Create log dir
         if not self._LOG_DIR.exists():
@@ -71,8 +64,6 @@ class JobbergateCliOps:
         pip_install_cmd = [
             self._PIP_CMD,
             "install",
-            "--index-url",
-            self._derived_pypi_url(),
             target_package,
         ]
 
@@ -93,8 +84,6 @@ class JobbergateCliOps:
             self._PIP_CMD,
             "install",
             "--upgrade",
-            "--index-url",
-            self._derived_pypi_url(),
             f"{self._PACKAGE_NAME}=={version}",
         ]
 
