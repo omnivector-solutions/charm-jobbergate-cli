@@ -6,6 +6,7 @@ This file keeps track of all notable changes to charm-jobbergate-cli
 
 Unreleased
 ----------
+- Added support for Rocky Linux and Ubuntu Jammy.
 
 1.0.0 - 2022-12-15
 ------------------

@@ -15,7 +15,7 @@ logger = logging.getLogger()
 class JobbergateCliOps:
     """Track and perform jobbergate-cli ops."""
 
-    _PYTHON_BIN = Path("/usr/bin/python3.6")
+    _PYTHON_BIN = Path("/usr/bin/python3")
     _PACKAGE_NAME = "jobbergate-cli"
     _VENV_DIR = Path("/srv/new-jobbergate-cli-venv")
     _VENV_PYTHON = _VENV_DIR.joinpath("bin", "python").as_posix()
