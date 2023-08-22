@@ -6,30 +6,40 @@ set -e
 # Source the os-release information into the env.
 . /etc/os-release
 
-if ! [[ -f '.installed' ]]; then
+PYTHON_BIN=/opt/python/3.8.16/bin/python3.8
+
+if [ ! -f '.installed' ]
+then
     # Determine if we are running in centos or ubuntu, if centos
     # provision the needed prereqs.
-    if [[ $ID == 'centos' ]]; then
-        yum -y install wget
-        # Determine the centos version and install prereqs accordingly
-        major=$(cat /etc/centos-release | tr -dc '0-9.'|cut -d \. -f1)
-        if [[ $major == "7" ]]; then
-            # Install yaml deps
-            yum -y install libyaml-devel
-            # Install python3 using yum (will install python3.6 on centos7)
-            if ! type -a python3; then
-                echo "Running centos$major, installing prereqs."
-                # Install system python3
-                yum -y install epel-release
-                yum -y install python3
-            fi
-        else
-            echo "Running unsuppored version of centos: $major"
-            exit -1
+    if [ $ID = 'centos' || $ID = 'rocky' ]
+    then       
+        # Install yaml deps
+        yum -y install libyaml-devel
+        
+        # We need python3.8 to run license-manager-agent.
+        # Install python3.8 from source.
+        if [ ! -e $PYTHON_BIN ]
+        then
+            yum install -y epel-release gcc zlib-devel bzip2 bzip2-devel readline-devel \
+            sqlite sqlite-devel openssl-devel tk-devel libffi-devel xz-devel wget
+
+            /bin/bash ./src/templates/install_python.sh
+        fi       
+    elif [ $ID = 'ubuntu' ]
+    then
+        # We are running an ubuntu os, so check for python and install the
+        # needed venv package or python3 from source, depending on what already
+        # exists on the system.
+        #
+        if [ ! -e $PYTHON_BIN ]
+        then
+            apt install -y make build-essential libssl-dev zlib1g-dev \
+            libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm \
+            libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev
+
+            /bin/bash ./src/templates/install_python.sh        
         fi
-    elif [[ $ID == 'ubuntu' ]]; then
-        # pip and venv are not installed in ubuntu by default. Install them
-        apt install -y python3-pip python3-venv
     fi
     touch .installed
 fi
