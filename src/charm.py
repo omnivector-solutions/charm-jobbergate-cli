@@ -86,6 +86,7 @@ class JobbergateCliCharm(CharmBase):
             "oidc-audience",
             "oidc-client-id",
             "compatibility-mode",
+            "legacy-name-convention",
             "default-cluster-name",
             "alias-name",
         }

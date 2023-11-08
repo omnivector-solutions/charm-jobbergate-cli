@@ -54,6 +54,11 @@ options:
     default: true
     description: |
       Run new-jobbergate-cli in compatibility mode.
+  legacy-name-convention:
+    type: boolean
+    default: true
+    description: |
+      Use legacy name convention to name job-scripts.
   default-cluster-name:
     type: string
     default:
