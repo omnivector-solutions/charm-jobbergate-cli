@@ -6,6 +6,7 @@ This file keeps track of all notable changes to charm-jobbergate-cli
 
 Unreleased
 ----------
+- Added new configuration: JOBBERGATE_LEGACY_NAME_CONVENTION
 
 1.0.3 - 2023-09-07
 ------------------
