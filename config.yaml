@@ -65,7 +65,7 @@ options:
     description: |
       Name of the cluster to which jobs should be submitted by default.
   sbatch-path:
-    type: boolean
+    type: string
     default: /usr/bin/sbatch
     description: |
       Location of the sbatch executable used to enable on-site submissions.
