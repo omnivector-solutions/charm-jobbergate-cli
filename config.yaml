@@ -64,6 +64,11 @@ options:
     default:
     description: |
       Name of the cluster to which jobs should be submitted by default.
+  sbatch-path:
+    type: boolean
+    default: /usr/bin/sbatch
+    description: |
+      Location of the sbatch executable used to enable on-site submissions.
   alias-name:
     type: string
     default: "jobbergate"
