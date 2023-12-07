@@ -69,6 +69,11 @@ options:
     default: /usr/bin/sbatch
     description: |
       Location of the sbatch executable used to enable on-site submissions.
+  cache-dir:
+    type: string
+    default: ~/.local/share/jobbergate
+    description: |
+      Location for the cache dir that can be set for each environment to avoid conflicts on access credentials.
   alias-name:
     type: string
     default: "jobbergate"
