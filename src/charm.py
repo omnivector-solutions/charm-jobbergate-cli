@@ -89,6 +89,7 @@ class JobbergateCliCharm(CharmBase):
             "legacy-name-convention",
             "default-cluster-name",
             "sbatch-path",
+            "cache-dir",
             "alias-name",
         }
         ctxt = {k: self.model.config.get(k) for k in ctxt_keys}
