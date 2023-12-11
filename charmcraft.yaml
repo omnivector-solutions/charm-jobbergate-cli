@@ -12,7 +12,3 @@ bases:
         architectures: [amd64]
       - name: centos
         channel: "7"
-        architectures: [amd64]
-      - name: centos
-        channel: "8"
-        architectures: [amd64]
