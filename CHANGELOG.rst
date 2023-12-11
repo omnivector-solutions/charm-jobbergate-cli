@@ -6,6 +6,9 @@ This file keeps track of all notable changes to charm-jobbergate-cli
 
 Unreleased
 ----------
+
+1.0.4 - 2023-12-11
+------------------
 - Added new configuration: JOBBERGATE_LEGACY_NAME_CONVENTION
 - Added new configuration: SBATCH_PATH [ASP-4238]
 - Added new configuration: JOBBERGATE_CACHE_DIR [ASP-4053]
