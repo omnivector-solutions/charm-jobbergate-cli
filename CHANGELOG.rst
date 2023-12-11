@@ -9,6 +9,8 @@ Unreleased
 - Added new configuration: JOBBERGATE_LEGACY_NAME_CONVENTION
 - Added new configuration: SBATCH_PATH [ASP-4238]
 - Added new configuration: JOBBERGATE_CACHE_DIR [ASP-4053]
+- Dropped support for CentOS 8
+- Installed Python 3.12 to run the CLI
 
 1.0.3 - 2023-09-07
 ------------------
