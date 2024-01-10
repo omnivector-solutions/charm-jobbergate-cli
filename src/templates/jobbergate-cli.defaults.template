@@ -11,3 +11,4 @@ JOBBERGATE_COMPATIBILITY_MODE={compatibility-mode}
 JOBBERGATE_LEGACY_NAME_CONVENTION={legacy-name-convention}
 DEFAULT_CLUSTER_NAME={default-cluster-name}
 SBATCH_PATH={sbatch-path}
+JOBBERGATE_CACHE_DIR={cache-dir}
