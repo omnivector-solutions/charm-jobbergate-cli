@@ -6,6 +6,7 @@ This file keeps track of all notable changes to charm-jobbergate-cli
 
 Unreleased
 ----------
+- Fixed JOBBERGATE_CACHE_DIR not being writen to the config file
 
 1.0.4 - 2023-12-11
 ------------------
