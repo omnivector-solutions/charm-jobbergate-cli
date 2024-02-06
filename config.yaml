@@ -79,3 +79,8 @@ options:
     default: "jobbergate"
     description: |
       Executable name set using an alias in order to avoid conflicts with legacy jobbergate.
+  multi-tenancy-enabled:
+    type: boolean
+    default: true
+    description: |
+      Enable multi-tenancy to fix cluster name mapping by client_id by abstracting the organization_id.

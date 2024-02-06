@@ -91,6 +91,7 @@ class JobbergateCliCharm(CharmBase):
             "sbatch-path",
             "cache-dir",
             "alias-name",
+            "multi-tenancy-enabled",
         }
         ctxt = {k: self.model.config.get(k) for k in ctxt_keys}
 
