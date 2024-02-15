@@ -6,6 +6,9 @@ This file keeps track of all notable changes to charm-jobbergate-cli
 
 Unreleased
 ----------
+
+1.0.5 - 2024-02-15
+------------------
 - Fixed JOBBERGATE_CACHE_DIR not being writen to the config file
 - Added new configuration: MULTI_TENANCY_ENABLED [ASP-2045]
 
