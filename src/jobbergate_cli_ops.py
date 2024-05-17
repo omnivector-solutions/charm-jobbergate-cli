@@ -55,7 +55,7 @@ class JobbergateCliOps:
                 "application-specific-environments", ""
             ),
         )
-        self.environment_manager.install(clear_install=False)
+        self.environment_manager.install(clear_install=True)
 
     def get_version_info(self):
         """Show version and info about new-jobbergate-cli."""
