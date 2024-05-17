@@ -67,14 +67,6 @@ This will result in the new-jobbergate-cli package upgrade to 3.2.4.
 
 ### Additional Configuration Options
 
-If you wish to install a particular version of new-jobbergate-cli, you may add it in
-`new-jobbergate-cli.yaml` also:
-
-```yaml
-new-jobbergate-cli:
-  version: 3.2.4
-```
-
 If you need to be able to upload user logs to S3, you will need to include in the config:
 
 ```yaml
@@ -89,6 +81,21 @@ If you want error events to be sent to Sentry, you can add the DSN to the config
 new-jobbergate-cli:
   sentry-dsn: <sentry_dsn>  # Find this in Sentry Project Settings under "Client Keys".
 ```
+
+Application-specific environments can be set in the config option `application-specific-environments`. They are managed as hatch environments, please refer to the [Hatch documentation](https://hatch.pypa.io/dev/config/environment/overview/) for more information. For instance, an environment named `application` can be set as follows:
+
+```toml
+[tool.hatch.envs.application]
+extra-dependencies = [
+  "foo",
+  "bar",
+  "baz",
+]
+```
+
+It will inherit `jobbergate-cli` and its dependencies from the base environment and add the extra dependencies `foo`, `bar`, and `baz`.
+Application-specific environments are available at `/srv/new-jobbergate-cli-venv/env/virtual/<env_name>/lib`.
+The application workflow file (e.g. `jobbergate.py`) can enable them at runtime by using `sys.path.append` to add the path to the environment.
 
 ## License
 
