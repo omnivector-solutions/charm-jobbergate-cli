@@ -6,6 +6,9 @@ This file keeps track of all notable changes to charm-jobbergate-cli
 
 Unreleased
 ----------
+- Replace venv by hatch as the virtual environment manager enabling the creation of application-specific virtual environments [ASP-4933]
+- Removed the `version` configuration option since it was ambiguous with the update action
+
 
 1.0.5 - 2024-02-15
 ------------------

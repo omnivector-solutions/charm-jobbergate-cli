@@ -1,12 +1,12 @@
 """
 JobbergateCliOps.
 """
-import logging
-import subprocess
 
+import logging
+from pathlib import Path
 from shutil import rmtree
 
-from pathlib import Path
+from environment_manager import EnvironmentManager
 
 
 logger = logging.getLogger()
@@ -15,107 +15,58 @@ logger = logging.getLogger()
 class JobbergateCliOps:
     """Track and perform jobbergate-cli ops."""
 
-    _PYTHON_BIN = Path("/opt/python/python3.12/bin/python3.12")
-    _PACKAGE_NAME = "jobbergate-cli"
     _VENV_DIR = Path("/srv/new-jobbergate-cli-venv")
-    _VENV_PYTHON = _VENV_DIR.joinpath("bin", "python").as_posix()
     _ETC_DEFAULT = Path("/etc/default/jobbergate3-cli")
     _PROFILE = Path("/etc/profile.d/new-jobbergate-cli.sh")
 
     def __init__(self, charm):
         """Create class level variables."""
         self._charm = charm
+        self.environment_manager = EnvironmentManager(base_path=self._VENV_DIR)
 
     def install(self):
-        """Install package from private pypi."""
+        """Install package."""
 
-        # Create the virtualenv
-        create_venv_cmd = [
-            self._PYTHON_BIN.as_posix(),
-            "-m",
-            "venv",
-            self._VENV_DIR.as_posix(),
-        ]
-        subprocess.call(create_venv_cmd)
-        logger.debug("virtualenv created")
+        self._VENV_DIR.mkdir(parents=True, exist_ok=True)
+        self.environment_manager.write_config_file()
+        self.environment_manager.install(clear_install=True)
+        self.create_symbolic_link()
 
-        # Ensure pip
-        ensure_pip_cmd = [
-            self._VENV_PYTHON,
-            "-m",
-            "ensurepip",
-        ]
-        subprocess.call(ensure_pip_cmd)
-        logger.debug("pip ensured")
+    def create_symbolic_link(self):
+        """
+        Create a symbolic link to the new location of the bin directory.
 
-        # Ensure we have the latest pip
-        upgrade_pip_cmd = [
-            self._VENV_PYTHON,
-            "-m",
-            "pip",
-            "install",
-            "--upgrade",
-            "pip",
-        ]
-        subprocess.call(upgrade_pip_cmd)
+        It changed after hatch was introduced as the virtual environment manager.
+        The link ensures the previous bin path is still valid for backward compatibility.
+        """
+        new_bin_path = self._VENV_DIR / "env" / "virtual" / "default" / "bin"
+        previous_bin_path = self._VENV_DIR / "bin"
 
-        # Install package from pypi.org
-        package_version = self._charm.model.config.get("version")
-        target_package = self._PACKAGE_NAME
-        if package_version:
-            target_package += f"=={self._charm.model.config['version']}"
-        pip_install_cmd = [
-            self._VENV_PYTHON,
-            "-m",
-            "pip",
-            "install",
-            target_package,
-        ]
+        if previous_bin_path.exists():
+            previous_bin_path.unlink()
 
-        out = subprocess.check_output(pip_install_cmd, env={}).decode().strip()
-
-        if "Successfully installed" not in out:
-            logger.error(f"Error installing {target_package}")
-        else:
-            logger.debug(f"{target_package} installed")
+        previous_bin_path.symlink_to(new_bin_path, target_is_directory=True)
 
     def upgrade(self, version: str):
-        """Upgrade armada-agent."""
-        pip_install_cmd = [
-            self._VENV_PYTHON,
-            "-m",
-            "pip",
-            "install",
-            "--upgrade",
-            f"{self._PACKAGE_NAME}=={version}",
-        ]
-
-        out = subprocess.check_output(pip_install_cmd, env={}).decode().strip()
-
-        if "Successfully installed" not in out:
-            logger.error(f"Trouble upgrading {self._PACKAGE_NAME}, please debug")
-        else:
-            logger.debug(f"{self._PACKAGE_NAME} installed")
+        """Upgrade package."""
+        self.environment_manager.write_config_file(
+            target_version=version,
+            application_specific_environments=self._charm.model.config.get(
+                "application-specific-environments", ""
+            ),
+        )
+        self.environment_manager.install(clear_install=True)
 
     def get_version_info(self):
         """Show version and info about new-jobbergate-cli."""
-        cmd = [
-            self._VENV_PYTHON,
-            "-m",
-            "pip",
-            "show",
-            self._PACKAGE_NAME
-        ]
-
-        out = subprocess.check_output(cmd, env={}).decode().strip()
-
-        return out
+        return self.environment_manager.get_version_info()
 
     def remove(self):
         """
         Remove the things we have created.
         """
         rmtree(self._VENV_DIR.as_posix())
+        self._ETC_DEFAULT.unlink(missing_ok=True)
 
     def configure_executable_alias(self, alias_name):
         """

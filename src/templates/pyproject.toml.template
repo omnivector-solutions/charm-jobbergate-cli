@@ -1,0 +1,9 @@
+[project]
+name = "default"
+
+[tool.hatch.envs.default]
+detached = true
+python = "{python_bin}"
+dependencies = ["{target_package}"]
+
+{application_specific_environments}
