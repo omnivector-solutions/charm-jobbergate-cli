@@ -18,6 +18,9 @@ class JobbergateCliOps:
     _VENV_DIR = Path("/srv/new-jobbergate-cli-venv")
     _ETC_DEFAULT = Path("/etc/default/jobbergate3-cli")
     _PROFILE = Path("/etc/profile.d/new-jobbergate-cli.sh")
+    _EXECUTABLE_PATH = _VENV_DIR / "env/virtual/default/bin/jobbergate"
+    _EXECUTABLE_LINK = Path("/usr/local/bin/jobbergate")
+    _SHELL_COMPLETION = Path("/etc/bash_completion.d/jobbergate_complete")
 
     def __init__(self, charm):
         """Create class level variables."""
@@ -31,6 +34,8 @@ class JobbergateCliOps:
         self.environment_manager.write_config_file()
         self.environment_manager.install(clear_install=True)
         self.create_symbolic_link()
+        self.configure_bin_script()
+        self.configure_shell_completion()
 
     def create_symbolic_link(self):
         """
@@ -39,13 +44,12 @@ class JobbergateCliOps:
         It changed after hatch was introduced as the virtual environment manager.
         The link ensures the previous bin path is still valid for backward compatibility.
         """
-        new_bin_path = self._VENV_DIR / "env" / "virtual" / "default" / "bin"
         previous_bin_path = self._VENV_DIR / "bin"
 
-        if previous_bin_path.exists():
-            previous_bin_path.unlink()
-
-        previous_bin_path.symlink_to(new_bin_path, target_is_directory=True)
+        previous_bin_path.unlink(missing_ok=True)
+        previous_bin_path.symlink_to(
+            self._EXECUTABLE_PATH.parent, target_is_directory=True
+        )
 
     def upgrade(self, version: str):
         """Upgrade package."""
@@ -67,25 +71,18 @@ class JobbergateCliOps:
         """
         rmtree(self._VENV_DIR.as_posix())
         self._ETC_DEFAULT.unlink(missing_ok=True)
+        self._SHELL_COMPLETION.unlink(missing_ok=True)
 
-    def configure_executable_alias(self, alias_name):
-        """
-        Set an alias for the jobbergate executable.
-
-        It aims to avoid conflicts between legacy and new versions of jobbergate-cli.
-        """
-        executable_path = self._VENV_DIR / "bin" / "jobbergate"
-        file_content = "alias {}='{}'".format(alias_name, executable_path.as_posix())
-
-        logger.debug(f"Writing executable alias to {self._PROFILE}: {file_content}")
-        self._PROFILE.write_text(file_content)
+    def configure_bin_script(self):
+        """Create a symbolic link for the bin script."""
+        self._EXECUTABLE_LINK.unlink(missing_ok=True)
+        self._EXECUTABLE_LINK.symlink_to(
+            self._EXECUTABLE_PATH, target_is_directory=False
+        )
 
     def configure_etc_default(self, ctxt):
         """Render and write out the file."""
-
-        ctxt_to_render = {
-            **ctxt,
-        }
+        ctxt_to_render = {**ctxt}
 
         env_template = Path(
             "./src/templates/jobbergate-cli.defaults.template"
@@ -93,7 +90,14 @@ class JobbergateCliOps:
 
         rendered_template = env_template.format(**ctxt_to_render)
 
-        if self._ETC_DEFAULT.exists():
-            self._ETC_DEFAULT.unlink()
-
+        self._ETC_DEFAULT.unlink(missing_ok=True)
         self._ETC_DEFAULT.write_text(rendered_template)
+
+    def configure_shell_completion(self):
+        """Render and write out the file."""
+        shell_completion_template = Path(
+            "./src/templates/bash-completion.template"
+        ).read_text()
+
+        self._SHELL_COMPLETION.parent.mkdir(parents=True, exist_ok=True)
+        self._SHELL_COMPLETION.write_text(shell_completion_template)

@@ -6,6 +6,8 @@ This file keeps track of all notable changes to charm-jobbergate-cli
 
 Unreleased
 ----------
+- Enabled shell completion for the jobbergate-cli [ASP-4624]
+- Removed alias name now that legacy is decommissioned, create a symlink on `/usr/local/bin` instead
 
 1.0.6 - 2024-07-01
 ------------------
