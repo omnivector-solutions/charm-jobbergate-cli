@@ -10,9 +10,15 @@ bases:
       - name: ubuntu
         channel: "22.04"
         architectures: [amd64]
-      - name: centos
-        channel: "7"
-        architectures: [amd64]
 parts:
   charm:
     charm-python-packages: [setuptools]
+    build-packages:
+      - libffi-dev
+      - pkg-config
+      - libssl-dev
+      - cmake
+    override-build: |
+      curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+      cp $HOME/.cargo/bin/* /usr/local/bin
+      craftctl default
