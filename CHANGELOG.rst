@@ -8,6 +8,7 @@ Unreleased
 ----------
 - Enabled shell completion for the jobbergate-cli [ASP-4624]
 - Removed alias name now that legacy is decommissioned, create a symlink on `/usr/local/bin` instead
+- Remove support for CentOS
 
 1.0.6 - 2024-07-01
 ------------------
