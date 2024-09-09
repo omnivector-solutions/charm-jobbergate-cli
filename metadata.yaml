@@ -16,7 +16,5 @@ tags:
     - hpc
 
 series:
-    - centos7
-    - centos8
     - focal
     - jammy
