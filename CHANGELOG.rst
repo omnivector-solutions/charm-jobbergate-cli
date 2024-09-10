@@ -6,6 +6,9 @@ This file keeps track of all notable changes to charm-jobbergate-cli
 
 Unreleased
 ----------
+
+1.0.7 - 2024-09-10
+------------------
 - Enabled shell completion for the jobbergate-cli [ASP-4624]
 - Removed alias name now that legacy is decommissioned, create a symlink on `/usr/local/bin` instead
 - Remove support for CentOS
@@ -14,7 +17,6 @@ Unreleased
 ------------------
 - Replace venv by hatch as the virtual environment manager enabling the creation of application-specific virtual environments [ASP-4933]
 - Removed the `version` configuration option since it was ambiguous with the update action
-
 
 1.0.5 - 2024-02-15
 ------------------
